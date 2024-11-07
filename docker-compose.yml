@@ -32,8 +32,8 @@ services:
       - LDAP_TECHNICAL_USER_CN=${LDAP_TECHNICAL_USER_CN}
       - LDAP_TECHNICAL_USER_PASSWD=${LDAP_TECHNICAL_USER_PASSWD}
     volumes: 
-      - openldap:/var/lib/openldap:rw
-      - slapd-d:/etc/openldap/slapd.d:rw
+      - openldap:/var/lib/ldap:rw
+      - slapd-d:/etc/ldap/slapd.d:rw
     ports:
       - "389:389"
       - "636:636"

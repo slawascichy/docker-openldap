@@ -130,8 +130,8 @@ docker run --name openldap -p 389:389 -p 636:636 \
  --env LDAP_ROOT_CN=manager \
  --env LDAP_ROOT_DN=cn=manager,dc=scisoftware,dc=pl \
  --env LDAP_ROOT_PASSWD=secret \
- --volume slapd_database:/var/lib/openldap \
- --volume slapd_config:/etc/openldap/slapd.d \
+ --volume slapd_database:/var/lib/ldap \
+ --volume slapd_config:/etc/ldap/slapd.d \
  --detach ibpm/openldap:ubuntu-0.1
 ```
 - Linux - docker compose
@@ -150,8 +150,8 @@ docker run --name openldap -p 389:389 -p 636:636 `
  --env LDAP_ROOT_CN=manager `
  --env LDAP_ROOT_DN=cn=manager,dc=scisoftware,dc=pl `
  --env LDAP_ROOT_PASSWD=secret `
- --volume slapd_database:/var/lib/openldap `
- --volume slapd_config:/etc/openldap/slapd.d `
+ --volume slapd_database:/var/lib/ldap `
+ --volume slapd_config:/etc/ldap/slapd.d `
  --detach ibpm/openldap:ubuntu-0.1
 
 ```
