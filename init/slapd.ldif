@@ -1,0 +1,84 @@
+#
+# See slapd-config(5) for details on configuration options.
+# This file should NOT be world readable.
+#
+dn: cn=config
+objectClass: olcGlobal
+cn: config
+#
+#
+# Define global ACLs to disable default read access.
+#
+olcArgsFile: /var/run/slapd/slapd.args
+olcLogLevel: none
+olcPidFile: /var/run/slapd/slapd.pid
+
+#
+# Load dynamic backend modules:
+#
+dn: cn=module,cn=config
+objectClass: olcModuleList
+cn: module
+olcModulepath:  /usr/lib/ldap
+olcModuleload:  back_mdb
+
+dn: cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: schema
+
+include: file:///etc/ldap/schema/core.ldif
+include: file:///etc/ldap/schema/cosine.ldif
+include: file:///etc/ldap/schema/inetorgperson.ldif
+include: file:///etc/ldap/schema/001misc.ldif
+include: file:///etc/ldap/schema/002mailRecipient.ldif
+include: file:///etc/ldap/schema/003ADPerson.ldif
+include: file:///etc/ldap/schema/004group.ldif
+include: file:///etc/ldap/schema/005mailGroup.ldif
+include: file:///etc/ldap/schema/006sudo.ldif
+include: file:///etc/ldap/schema/007cszuAttrs.ldif
+include: file:///etc/ldap/schema/008cszuUser.ldif
+include: file:///etc/ldap/schema/009cszuGroup.ldif
+include: file:///etc/ldap/schema/010calendarEntry.ldif
+include: file:///etc/ldap/schema/011team.ldif
+include: file:///etc/ldap/schema/013rfc2307bis.ldif
+
+# Frontend settings
+#
+dn: olcDatabase=frontend,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcFrontendConfig
+olcDatabase: frontend
+#
+
+#######################################################################
+# LMDB database definitions
+#######################################################################
+#
+dn: olcDatabase=mdb,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcMdbConfig
+olcDatabase: mdb
+olcDbMaxSize: 1073741824
+olcSuffix: LDAP_OLC_SUFFIX
+olcRootDN: LDAP_ROOT_DN
+olcRootPW: LDAP_ROOT_PASSWD_ENCRYPTED
+olcDbDirectory: /var/lib/ldap
+olcDbIndex: objectClass pres,eq
+olcDbIndex: uid pres,eq
+olcDbIndex: cn,sn pres,eq,approx,sub
+olcDbIndex: mail pres,eq,sub
+olcDbIndex: loginShell pres,eq
+olcDbIndex: sudoUser,sudoHost pres,eq
+olcDbIndex: allowSystem pres,eq
+olcDbIndex: sAMAccountName pres,eq
+olcDbIndex: userPrincipalName pres,eq
+olcAccess: to attrs=userPassword by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn.base="LDAP_ROOT_DN" write by dn.children="ou=Technical,LDAP_OLC_SUFFIX" read by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write by anonymous auth by self write by * none
+olcAccess: to attrs=shadowLastChange by self write by anonymous auth by * read
+olcAccess: to dn.base="" by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by anonymous auth by * read 
+olcAccess: to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn.base="LDAP_ROOT_DN" write by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write by anonymous auth by * read
+
+dn: olcDatabase=monitor,cn=config
+objectClass: olcDatabaseConfig
+olcDatabase: monitor
+olcRootDN: cn=config
+olcMonitoring: FALSE

@@ -1,0 +1,39 @@
+version: '2'
+
+networks:
+  default-network:
+    driver: bridge
+
+volumes:
+  openldap:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /d/mercury/openldap	
+  slapd-d:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /d/mercury/slapd.d 
+ 
+services:
+  openldap:
+    image: ibpm/openldap:ubuntu-0.1
+    networks:
+      - default-network
+    environment:
+      - LDAP_ORG_DC=${LDAP_ORG_DC}
+      - LDAP_OLC_SUFFIX=${LDAP_OLC_SUFFIX}
+      - LDAP_ROOT_CN=${LDAP_ROOT_CN}
+      - LDAP_ROOT_DN=cn=${LDAP_ROOT_CN},${LDAP_OLC_SUFFIX}
+      - LDAP_ROOT_PASSWD=${LDAP_ROOT_PASSWD}
+      - LDAP_TECHNICAL_USER_CN=${LDAP_TECHNICAL_USER_CN}
+      - LDAP_TECHNICAL_USER_PASSWD=${LDAP_TECHNICAL_USER_PASSWD}
+    volumes: 
+      - openldap:/var/lib/openldap:rw
+      - slapd-d:/etc/openldap/slapd.d:rw
+    ports:
+      - "389:389"
+      - "636:636"

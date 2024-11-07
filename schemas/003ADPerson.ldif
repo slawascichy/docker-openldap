@@ -1,0 +1,12 @@
+dn: cn=adperson,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: adperson
+olcObjectClasses: ( 1.2.840.113556.1.4.220 NAME 'ADPerson' DESC 'Active Directory Person Entry' SUP inetOrgPerson  STRUCTURAL MUST ( sAMAccountName ) MAY ( userPrincipalName $ msExchUserCulture $ MPK1Code $ MPK1Name $ MPK2Code $ MPK2Name ) )
+olcAttributeTypes: ( 1.2.840.113556.1.4.221 NAME 'sAMAccountName' EQUALITY caseIgnoreMatch SYNTAX '1.3.6.1.4.1.1466.115.121.1.15' SINGLE-VALUE )
+olcAttributeTypes: ( 1.2.840.113556.1.4.656 NAME 'userPrincipalName' EQUALITY caseIgnoreMatch SYNTAX '1.3.6.1.4.1.1466.115.121.1.15' SINGLE-VALUE )
+olcAttributeTypes: ( 1.2.840.113556.1.4.657 NAME 'msExchUserCulture' EQUALITY caseIgnoreMatch SYNTAX '1.3.6.1.4.1.1466.115.121.1.15' SINGLE-VALUE )
+olcAttributeTypes: ( 1.2.840.113556.1.4.700 NAME 'MPK1Name' DESC 'Name of the first cost center - MPK (Cost Center)' EQUALITY caseIgnoreMatch  SYNTAX '1.3.6.1.4.1.1466.115.121.1.15' SINGLE-VALUE )
+olcAttributeTypes: ( 1.2.840.113556.1.4.701 NAME 'MPK1Code' DESC 'Code of the first cost center - MPK (Cost Center)' EQUALITY caseIgnoreMatch  SYNTAX '1.3.6.1.4.1.1466.115.121.1.15' SINGLE-VALUE )
+olcAttributeTypes: ( 1.2.840.113556.1.4.702 NAME 'MPK2Name' DESC 'Name of the second cost center - MPK (Cost Center)' EQUALITY caseIgnoreMatch  SYNTAX '1.3.6.1.4.1.1466.115.121.1.15' SINGLE-VALUE )
+olcAttributeTypes: ( 1.2.840.113556.1.4.703 NAME 'MPK2Code' DESC 'Code of the second cost center - MPK (Cost Center)' EQUALITY caseIgnoreMatch  SYNTAX '1.3.6.1.4.1.1466.115.121.1.15' SINGLE-VALUE )
+
