@@ -88,7 +88,8 @@ During the first start of the service, the database is initialized with predefin
 
 Sample of predefined tree:
 
-![Sample of predefined tree](https://github.com/SciSoftwareSlawomirCichy/mercury-docker/blob/main/openldap/doc/sample_predefinied_tree.png?raw=true)
+![Sample of predefined tree](
+https://raw.githubusercontent.com/slawascichy/docker-openldap/refs/heads/main/doc/sample_predefinied_tree.png)
 
 ## Build image
 For building the image you should use docker command:
