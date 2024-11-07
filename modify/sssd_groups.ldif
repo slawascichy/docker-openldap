@@ -1,0 +1,15 @@
+dn: cn=admin,ou=Groups,dc=scisoftware,dc=pl
+objectClass: groupOfUniqueNames
+objectClass: posixGroup
+objectClass: top
+cn: admin
+gidNumber: 1002
+uniqueMember: uid=slawas,ou=People,dc=scisoftware,dc=pl
+
+dn: cn=developers,ou=Groups,dc=scisoftware,dc=pl
+objectClass: groupOfUniqueNames
+objectClass: posixGroup
+objectClass: top
+cn: developers
+gidNumber: 1001
+uniqueMember: uid=slawas,ou=People,dc=scisoftware,dc=pl

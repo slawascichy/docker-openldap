@@ -1,0 +1,16 @@
+dn: uid=slawas,ou=People,dc=scisoftware,dc=pl
+objectClass: ADPerson
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: posixAccount
+objectClass: top
+cn: Sławomir Cichy
+gidNumber: 1001
+homeDirectory: /opt/ibpmusers/slawas
+sAMAccountName: slawas
+sn: Cichy
+uid: slawas
+uidNumber: 1001
+loginShell: /bin/bash
+userPassword: e1NIQX1oVE0yUXBMTTJmUVNobUNVbElzOC9uUWlVZHM9
