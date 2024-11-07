@@ -134,6 +134,12 @@ docker run --name openldap -p 389:389 -p 636:636 \
  --volume slapd_config:/etc/openldap/slapd.d \
  --detach ibpm/openldap:ubuntu-0.1
 ```
+- Linux - docker compose
+
+```
+docker compose --env-file ldap-conf.env up
+```
+
 
 - Windows, PowerShell
 
