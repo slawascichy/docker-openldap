@@ -4,14 +4,6 @@ echo "**************************"
 echo "* Starting OpenLDAP Server "
 echo "**************************"
 
-export LDAP_ORG_DC="scisoftware"
-export LDAP_OLC_SUFFIX=dc=scisoftware,dc=pl
-export LDAP_ROOT_CN=manager
-export LDAP_ROOT_DN=cn=manager,dc=scisoftware,dc=pl
-export LDAP_ROOT_PASSWD=secret
-export LDAP_TECHNICAL_USER_CN=FrontendAccount
-export LDAP_TECHNICAL_USER_PASSWD=secret
-
 export SLAPD_URLS="ldap:/// ldapi:/// ldaps:///"
 export SLAPD_OPTIONS="/etc/ldap/slapd.d"
 export LDAP_INIT_FILE=/etc/ldap/slapd.ldif
@@ -54,6 +46,8 @@ initDatabase() {
 	ldapadd -Y EXTERNAL -H ldapi:/// -f $LDIF_FILE
 	
 	touch $LDAP_INIT_FLAG_FILE
+	SLAPD_PID=`cat /var/run/slapd/slapd.pid`
+	kill $SLAPD_PID
 	echo "Applay init scripts END"
 }
 
@@ -61,10 +55,32 @@ initDatabase() {
 DIR=/var/lib/ldap
 if [ "$(ls -A $LDAP_INIT_FLAG_FILE)" ]; then
 	echo "Starting LDAP..."
-	/usr/sbin/slapd -u openldap -g openldap -h "$SLAPD_URLS" -F $SLAPD_OPTIONS
 else
     echo "Init database..."
     initDatabase
 fi
 
-/usr/sbin/nginx -g "daemon off;"
+# Debugging Levels
+# +=======+=================+===========================================================+
+# | Level |	Keyword			| Description												|
+# +=======+=================+===========================================================+
+# | -1	  |	any				| enable all debugging										|
+# | 0	  |	 	 			| no debugging												|
+# | 1	  |	(0x1 trace)		| trace function calls										|
+# | 2	  |	(0x2 packets)	| debug packet handling										|
+# | 4	  |	(0x4 args)		| heavy trace debugging										|
+# | 8	  |	(0x8 conns)		| connection management										|
+# | 16	  |	(0x10 BER)		| print out packets sent and received						|
+# | 32	  |	(0x20 filter)	| search filter processing									|
+# | 64	  |	(0x40 config)	| configuration processing									|
+# | 128	  |	(0x80 ACL)		| access control list processing							|
+# | 256	  |	(0x100 stats)	| stats log connections/operations/results					|
+# | 512	  |	(0x200 stats2)	| stats log entries sent									|
+# | 1024  |	(0x400 shell)	| print communication with shell backends					|
+# | 2048  |	(0x800 parse)	| print entry parsing debugging								|
+# | 16384 | (0x4000 sync)	| syncrepl consumer processing								|
+# | 32768 | (0x8000 none)	| only messages that get logged whatever log level is set	|
+# +=======+=================+===========================================================+
+
+/usr/sbin/slapd -u openldap -g openldap -d $SERVER_DEBUG -h "$SLAPD_URLS" -F $SLAPD_OPTIONS > slapd.log &
+tail -f slapd.log
