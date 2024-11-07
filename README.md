@@ -95,7 +95,7 @@ https://raw.githubusercontent.com/slawascichy/docker-openldap/refs/heads/main/do
 For building the image you should use docker command:
 
 ```
-docker build --no-cache -f Dockerfile -t ibpm/openldap:ubuntu-0.1
+docker build --no-cache -f Dockerfile -t ibpm/openldap:ubuntu-0.1 .
 ```
 where ``ubuntu-0.1`` tag name is required by compositions (see composition definitions).
 
