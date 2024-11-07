@@ -47,3 +47,13 @@ cn: Administrator
 sn: Administrator
 description: Administrator
 userPassword: LDAP_TECHNICAL_USER_ENCRYPTED
+
+dn: uid=ldapui,ou=Admins,dc=scisoftware,dc=pl
+objectClass: person
+objectClass: top
+objectClass: uidObject
+cn: Fast and versatile LDAP editor
+sn: LDAP editor
+uid: ldapui
+description: User bind for connection to Fast and versatile LDAP editor https://github.com/dnknth/ldap-ui
+userPassword: LDAP_TECHNICAL_USER_ENCRYPTED
