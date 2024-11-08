@@ -1,5 +1,0 @@
-dn: cn=group,cn=schema,cn=config
-objectClass: olcSchemaConfig
-cn: group
-olcObjectClasses: ( 1.2.840.113556.1.4.803 NAME 'group' DESC '' SUP top AUXILIARY MUST ( objectClass ) MAY ( cn $ mail $ name $ displayName $ description $ manager $ member $ memberOf $ SamAccountName ) X-ORIGIN 'AD Group' )
-olcAttributeTypes: ( 1.3.114.7.4.2.0.33 NAME 'memberOf' SUP distinguishedName)

@@ -1,4 +1,0 @@
-dn: cn=team,cn=schema,cn=config
-objectClass: olcSchemaConfig
-cn: team
-olcObjectClasses: ( 1.2.840.113556.1.4.804 NAME 'team' DESC '' SUP top STRUCTURAL MUST ( objectClass $ cn $ displayName ) MAY ( mail $ name $ description $ manager $ member $ memberOf $ SamAccountName ) X-ORIGIN 'AD Group' )

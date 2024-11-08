@@ -82,7 +82,8 @@ During the first start of the service, the database is initialized with predefin
 - Predefined user entries:
   - ``${LDAP_ROOT_DN}`` - LDAP manager, user entry has all privileges to all entries; password for the user is should be define in ``LDAP_ROOT_PASSWD`` environment variable (default value: "secret") and should be changed on production environments.
   - ``cn=Administrator,ou=Admins,${LDAP_OLC_SUFFIX}`` - administrator, user entry has write privileges to all entries; password for the user is should be define in ``LDAP_TECHNICAL_USER_PASSWD`` environment variable (default value: "secret") and should be changed on production environments
-  - ``cn=${LDAP_TECHNICAL_USER_CN},ou=Technical,${LDAP_OLC_SUFFIX}``, default value of ``LDAP_TECHNICAL_USER_CN`` is "FrontendAccount", user entry has read privileges to all entries; password for the user is should be define in ``LDAP_TECHNICAL_USER_PASSWD`` environment variable (default value: "secret") and should be changed on production environments.
+  - ``uid=ldapui,ou=Admins,${LDAP_OLC_SUFFIX}`` - administrator, user entry has write privileges to all entries; password for the user is should be define in ``LDAP_TECHNICAL_USER_PASSWD`` environment variable (default value: "secret") and should be changed on production environments. The entry can be use for integration with LDAP UI. Recomended UI is ldap-ui https://github.com/dnknth/ldap-ui. Sample compose with the UI is in project https://github.com/slawascichy/docker-ssh-sssd.
+   - ``cn=${LDAP_TECHNICAL_USER_CN},ou=Technical,${LDAP_OLC_SUFFIX}``, default value of ``LDAP_TECHNICAL_USER_CN`` is "FrontendAccount", user entry has read privileges to all entries; password for the user is should be define in ``LDAP_TECHNICAL_USER_PASSWD`` environment variable (default value: "secret") and should be changed on production environments.
   - ``uid=mrcmanager,ou=People,${LDAP_OLC_SUFFIX}`` - sample user with administrator privileges to IBPM Mercury (HgDB) system; password for the user is should be define in ``LDAP_TECHNICAL_USER_PASSWD`` environment variable (default value: "secret") and should be changed on production environments.
   - ``uid=mrcuser,ou=People,${LDAP_OLC_SUFFIX}`` - sample user with user privileges to IBPM Mercury (HgDB) system; password for the user is should be define in ``LDAP_TECHNICAL_USER_PASSWD`` environment variable (default value: "secret") and should be changed on production environments.
 
@@ -110,8 +111,10 @@ Required environment variables:
 | LDAP_ROOT_CN | admin user CN (Common Name) attribute e.g. "manager" |
 | LDAP_ROOT_DN | admin user DN (Distinguished Name) attribute; in DN should be used values of LDAP_ROOT_CN variable as CN attribute and LDAP_OLC_SUFFIX by pattern: cn=${LDAP_ROOT_CN},${LDAP_OLC_SUFFIX}; e.g. "cn=manager,dc=scisoftware,dc=pl"|
 | LDAP_ROOT_PASSWD | admin user password |
-| LDAP_TECHNICAL_USER_CN | (optional) technical user name, with read privileges to all entries |
+| LDAP_TECHNICAL_USER_CN | (optional) technical user name, with read privileges to all entries, default value: "FrontendAccount" |
 | LDAP_TECHNICAL_USER_PASSWD | (optional) technical user password, default value: "secret"|
+| LDAP_OLC_ACCESS | (optional) Additional access definition for LDAP. Default value is "by anonymous auth by * read" |
+| SERVER_DEBUG | OpenLDAP server debug mode, default value: 32 |
 
 Required volumes:
 
@@ -131,6 +134,8 @@ docker run --name openldap -p 389:389 -p 636:636 \
  --env LDAP_ROOT_CN=manager \
  --env LDAP_ROOT_DN=cn=manager,dc=scisoftware,dc=pl \
  --env LDAP_ROOT_PASSWD=secret \
+ --env LDAP_OLC_ACCESS="by anonymous auth by * read" \
+ --env SERVER_DEBUG=32 \
  --volume slapd_database:/var/lib/ldap \
  --volume slapd_config:/etc/ldap/slapd.d \
  --detach ibpm/openldap:ubuntu-0.1
@@ -151,6 +156,8 @@ docker run --name openldap -p 389:389 -p 636:636 `
  --env LDAP_ROOT_CN=manager `
  --env LDAP_ROOT_DN=cn=manager,dc=scisoftware,dc=pl `
  --env LDAP_ROOT_PASSWD=secret `
+ --env LDAP_OLC_ACCESS="by anonymous auth by * read" `
+ --env SERVER_DEBUG=32 `
  --volume slapd_database:/var/lib/ldap `
  --volume slapd_config:/etc/ldap/slapd.d `
  --detach ibpm/openldap:ubuntu-0.1

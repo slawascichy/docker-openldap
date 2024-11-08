@@ -1,5 +1,5 @@
 dn: uid=slawas,ou=People,dc=scisoftware,dc=pl
-objectClass: ADPerson
+objectClass: aDPerson
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
 objectClass: person

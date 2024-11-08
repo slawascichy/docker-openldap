@@ -5,9 +5,10 @@ ENV LDAP_OLC_SUFFIX=dc=${LDAP_ORG_DC},dc=example,dc=com
 ENV LDAP_ROOT_CN=Manager
 ENV LDAP_ROOT_DN=cn=${LDAP_ROOT_CN},${LDAP_OLC_SUFFIX}
 ENV LDAP_ROOT_PASSWD=secret
-ENV VER=2.6.3
 ENV LDAP_TECHNICAL_USER_CN=FrontendAccount
 ENV LDAP_TECHNICAL_USER_PASSWD=secret
+ENV LDAP_OLC_ACCESS="by anonymous auth by * read"
+ENV SERVER_DEBUG=32
 
 RUN apt update -q && \
     apt install locales && \

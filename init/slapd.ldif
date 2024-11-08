@@ -29,18 +29,20 @@ cn: schema
 include: file:///etc/ldap/schema/core.ldif
 include: file:///etc/ldap/schema/cosine.ldif
 include: file:///etc/ldap/schema/inetorgperson.ldif
-include: file:///etc/ldap/schema/001misc.ldif
-include: file:///etc/ldap/schema/002mailRecipient.ldif
-include: file:///etc/ldap/schema/003ADPerson.ldif
-include: file:///etc/ldap/schema/004group.ldif
-include: file:///etc/ldap/schema/005mailGroup.ldif
-include: file:///etc/ldap/schema/006sudo.ldif
-include: file:///etc/ldap/schema/007cszuAttrs.ldif
-include: file:///etc/ldap/schema/008cszuUser.ldif
-include: file:///etc/ldap/schema/009cszuGroup.ldif
-include: file:///etc/ldap/schema/010calendarEntry.ldif
-include: file:///etc/ldap/schema/011team.ldif
-include: file:///etc/ldap/schema/013rfc2307bis.ldif
+include: file:///etc/ldap/schema/openldap.ldif
+include: file:///etc/ldap/schema/dyngroup.ldif
+include: file:///etc/ldap/schema/001-misc.ldif
+include: file:///etc/ldap/schema/002-ADPerson.ldif
+include: file:///etc/ldap/schema/003-netscapemessagingserver.ldif
+include: file:///etc/ldap/schema/004-sudo.ldif
+include: file:///etc/ldap/schema/005-cszu.ldif
+include: file:///etc/ldap/schema/006-calendarEntry.ldif
+include: file:///etc/ldap/schema/007-ppolicy.ldif
+# To zamiast include: file:///etc/ldap/schema/nis.ldif
+include: file:///etc/ldap/schema/013-rfc2307bis.ldif
+include: file:///etc/ldap/schema/014-samba.ldif
+include: file:///etc/ldap/schema/015-openssh-lpk.ldif
+include: file:///etc/ldap/schema/016-ldapns.ldif
 
 # Frontend settings
 #
@@ -72,10 +74,31 @@ olcDbIndex: sudoUser,sudoHost pres,eq
 olcDbIndex: allowSystem pres,eq
 olcDbIndex: sAMAccountName pres,eq
 olcDbIndex: userPrincipalName pres,eq
-olcAccess: to attrs=userPassword by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn.base="LDAP_ROOT_DN" write by dn.children="ou=Technical,LDAP_OLC_SUFFIX" read by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write by anonymous auth by self write by * none
-olcAccess: to attrs=shadowLastChange by self write by anonymous auth by * read
-olcAccess: to dn.base="" by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by anonymous auth by * read 
-olcAccess: to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn.base="LDAP_ROOT_DN" write by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write by anonymous auth by * read
+olcAccess: to attrs=sambaPasswordHistory,sambaPwdLastSet,userPassword,sambaNTPassword 
+  by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage 
+  by dn="LDAP_ROOT_DN" manage 
+  by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write 
+  by dn.children="ou=Technical,LDAP_OLC_SUFFIX" read 
+  by self write 
+  by anonymous auth 
+  by * none
+olcAccess: to attrs=shadowLastChange 	
+  by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage 
+  by dn="LDAP_ROOT_DN" manage 
+  by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write 
+  by self write 
+  by anonymous auth 
+  by * read
+olcAccess: to dn.base="" 
+  by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage 
+  by dn="LDAP_ROOT_DN" manage 
+  by anonymous auth 
+  by * read 
+olcAccess: to * 
+  by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage 
+  by dn="LDAP_ROOT_DN" manage 
+  by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write 
+  LDAP_OLC_ACCESS
 
 dn: olcDatabase=monitor,cn=config
 objectClass: olcDatabaseConfig

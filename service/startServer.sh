@@ -19,12 +19,13 @@ initDatabase() {
 	sed -i "s|LDAP_OLC_SUFFIX|${LDAP_OLC_SUFFIX}|g" $LDAP_INIT_FILE
 	sed -i "s|LDAP_ROOT_DN|${LDAP_ROOT_DN}|g" $LDAP_INIT_FILE
 	sed -i "s|LDAP_ROOT_PASSWD_ENCRYPTED|${LDAP_ROOT_PASSWD_ENCRYPTED}|g" $LDAP_INIT_FILE
+	sed -i "s|LDAP_OLC_ACCESS|${LDAP_OLC_ACCESS}|g" $LDAP_INIT_FILE
 
 	echo "Starting LDAP..."
 	slapadd -n 0 -F /etc/ldap/slapd.d -l $LDAP_INIT_FILE
-  	chown -R openldap:openldap /etc/ldap/slapd.d
-  	/usr/sbin/slapd -u openldap -g openldap -h "$SLAPD_URLS" -F $SLAPD_OPTIONS
-  	cd $WORKSPACE
+  chown -R openldap:openldap /etc/ldap/slapd.d
+  /usr/sbin/slapd -u openldap -g openldap -h "$SLAPD_URLS" -F $SLAPD_OPTIONS
+  cd $WORKSPACE
   	
 	echo "Applay init scripts START"
 	echo "Run base.ldif..."
@@ -34,6 +35,7 @@ initDatabase() {
 	sed -i "s|LDAP_OLC_SUFFIX|${LDAP_OLC_SUFFIX}|g" $LDIF_FILE
 	sed -i "s|LDAP_ORG_DC|${LDAP_ORG_DC}|g" $LDIF_FILE
 	sed -i "s|LDAP_ROOT_DN|${LDAP_ROOT_DN}|g" $LDIF_FILE
+	sed -i "s|LDAP_ROOT_CN|${LDAP_ROOT_CN}|g" $LDIF_FILE
 	sed -i "s|LDAP_TECHNICAL_USER_CN|${LDAP_TECHNICAL_USER_CN}|g" $LDIF_FILE
 	sed -i "s|LDAP_TECHNICAL_USER_ENCRYPTED|${LDAP_TECHNICAL_USER_ENCRYPTED}|g" $LDIF_FILE
 	ldapadd -Y EXTERNAL -H ldapi:/// -f $LDIF_FILE
@@ -82,5 +84,5 @@ fi
 # | 32768 | (0x8000 none)	| only messages that get logged whatever log level is set	|
 # +=======+=================+===========================================================+
 
-/usr/sbin/slapd -u openldap -g openldap -d $SERVER_DEBUG -h "$SLAPD_URLS" -F $SLAPD_OPTIONS > slapd.log &
-tail -f slapd.log
+/usr/sbin/slapd -u openldap -g openldap -d $SERVER_DEBUG -h "$SLAPD_URLS" -F $SLAPD_OPTIONS > /var/log/slapd.log &
+tail -f /var/log/slapd.lo
