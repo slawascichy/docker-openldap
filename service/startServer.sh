@@ -84,5 +84,6 @@ fi
 # | 32768 | (0x8000 none)	| only messages that get logged whatever log level is set	|
 # +=======+=================+===========================================================+
 
+ulimit -n 8192
 /usr/sbin/slapd -u openldap -g openldap -d $SERVER_DEBUG -h "$SLAPD_URLS" -F $SLAPD_OPTIONS > /var/log/slapd.log &
-tail -f /var/log/slapd.lo
+tail -f /var/log/slapd.log

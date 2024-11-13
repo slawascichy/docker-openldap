@@ -51,7 +51,8 @@ RUN chmod a-x /etc/ldap/schema/* \
  && chown root:openldap /etc/ldap/ldap.conf \
  && chmod 640 /etc/ldap/ldap.conf \
  && rm -rf /tmp/* \
- && rm -rf /var/tmp/*
+ && rm -rf /var/tmp/* \
+ && chmod a+x /opt/service/startServer.sh
 
 VOLUME ["/var/lib/ldap", "/etc/ldap/slapd.d"]
 EXPOSE 80 389 636
