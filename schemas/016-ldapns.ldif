@@ -5,7 +5,7 @@
 #
 # Not part of the distribution: this is a workaround!
 #
-dn: cn=openssh-lpk,cn=schema,cn=config
+dn: cn=ldapns,cn=schema,cn=config
 objectClass: olcSchemaConfig
 cn: ldapns
 #

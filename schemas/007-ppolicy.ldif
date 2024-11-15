@@ -52,9 +52,9 @@
 #   attributes are defined that hold general password policy state
 #   information for each user.
 #
-dn: cn=cszu,cn=schema,cn=config
+dn: cn=ppolicy,cn=schema,cn=config
 objectClass: olcSchemaConfig
-cn: cszu
+cn: ppolicy
 #
 #5.2  Attribute Types used in the pwdPolicy ObjectClass
 #
