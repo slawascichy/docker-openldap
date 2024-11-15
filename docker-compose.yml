@@ -20,7 +20,7 @@ volumes:
  
 services:
   openldap:
-    image: ibpm/openldap:ubuntu-0.1
+    image: scisoftware/openldap:ubuntu-0.1
     networks:
       - default-network
     environment:
