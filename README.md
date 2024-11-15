@@ -124,6 +124,26 @@ docker build --no-cache -f Dockerfile -t scisoftware/openldap:ubuntu-0.1 .
 ```
 where ``ubuntu-0.1`` tag name is required by compositions (see composition definitions).
 
+### Push image to DockerHub
+
+Publishing images: The documentation recommends basing it on a working container - then you are basically sure that the image works.
+ - We make an image tag from a container. Follow example where `b9a8f7e273fa` is the running container id:
+ ```
+docker container ls
+docker container commit b9a8f7e273fa openldap:latest
+ ```
+
+ - We create a target image tag. Follow example where `ubuntu-0.1` is current version of image:
+ ```
+docker image tag openldap:latest scisoftware/openldap:latest
+docker image tag openldap:latest scisoftware/openldap:ubuntu-0.1
+ ```
+ 
+ - Send created images into the world. Use the `-a` (or `--all-tags`) option to push all tags of a local image:
+ ```
+docker image push -a scisoftware/openldap 
+ ```
+ 
 ## Run image
 
 Required environment variables:
