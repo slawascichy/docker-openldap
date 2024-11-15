@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:latest
 
 ENV LDAP_ORG_DC=sample
 ENV LDAP_OLC_SUFFIX=dc=${LDAP_ORG_DC},dc=example,dc=com
