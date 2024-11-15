@@ -23,7 +23,7 @@ During the first start of the service, the database is initialized with the supp
 #### Schema cszu
 The schema with definitions of `cszuAttrs`, `cszuPrivs`, `cszuUser` and `cszuGroup` object classes:
 
-```
+```text
 #
 # Author's scheme supporting the Central User Management System 
 # (Centralny System Zarządzania Użytkownikami - CSZU)
@@ -73,7 +73,7 @@ olcObjectClasses: ( 1.3.6.1.4.1.2021.3.2.1 NAME 'cszuGroup' DESC 'Attributes use
 #### ObjectClass adperson
 The schema with definitions of `aDPerson` objectClass:
 
-```
+```text
 #
 # Substitute for MS Active Directory schema
 #
@@ -123,7 +123,7 @@ https://raw.githubusercontent.com/slawascichy/docker-openldap/refs/heads/main/do
 ## Build image
 For building the image you should use docker command:
 
-```
+```shell
 docker build --no-cache -f Dockerfile -t scisoftware/openldap:ubuntu-0.1 .
 ```
 where ``ubuntu-0.1`` tag name is required by compositions (see composition definitions).
@@ -132,19 +132,19 @@ where ``ubuntu-0.1`` tag name is required by compositions (see composition defin
 
 Publishing images: The documentation recommends basing it on a working container - then you are basically sure that the image works.
  - We make an image tag from a container. Follow example where `b9a8f7e273fa` is the running container id:
- ```
+ ```shell
 docker container ls
 docker container commit b9a8f7e273fa openldap:latest
  ```
 
  - We create a target image tag. Follow example where `ubuntu-0.1` is current version of image:
- ```
+ ```shell
 docker image tag openldap:latest scisoftware/openldap:latest
 docker image tag openldap:latest scisoftware/openldap:ubuntu-0.1
  ```
  
  - Send created images into the world. Use the `-a` (or `--all-tags`) option to push all tags of a local image:
- ```
+ ```shell
 docker image push -a scisoftware/openldap 
  ```
 
@@ -177,7 +177,7 @@ For running the container based on the image you can use docker command:
 
 - Linux
 
-```
+```shell
 docker run --name openldap -p 389:389 -p 636:636 \
  --env LDAP_ORG_DC="scisoftware" \
  --env LDAP_OLC_SUFFIX=dc=scisoftware,dc=pl \
@@ -188,18 +188,18 @@ docker run --name openldap -p 389:389 -p 636:636 \
  --env SERVER_DEBUG=32 \
  --volume slapd_database:/var/lib/ldap \
  --volume slapd_config:/etc/ldap/slapd.d \
- --detach ibpm/openldap:ubuntu-0.1
+ --detach scisoftware/openldap:ubuntu-0.1
 ```
 - Linux - docker compose
 
-```
+```shell
 docker compose --env-file ldap-conf.env up
 ```
 
 
 - Windows, PowerShell
 
-```
+```shell
 docker run --name openldap -p 389:389 -p 636:636 `
  --env LDAP_ORG_DC="scisoftware" `
  --env LDAP_OLC_SUFFIX=dc=scisoftware,dc=pl `
@@ -210,6 +210,6 @@ docker run --name openldap -p 389:389 -p 636:636 `
  --env SERVER_DEBUG=32 `
  --volume slapd_database:/var/lib/ldap `
  --volume slapd_config:/etc/ldap/slapd.d `
- --detach ibpm/openldap:ubuntu-0.1
+ --detach scisoftware/openldap:ubuntu-0.1
 
 ```
