@@ -10,8 +10,12 @@ The image definition basing on the official image of Ubuntu on DockerHub: [Ubunt
 ### Predefined Schemas
 
 During the first start of the service, the database is initialized with the supported schemas. The following objectClass definitions are characteristic of this LDAP database:
-- cszuAttrs - *deprecated, please use cszuPrivs*; additional attributes used in authentication and authorization mechanisms for groups and users; schema based on **"Central System 'Z' of management Users (CSZU)"** standard.
-- cszuPrivs - *deprecated, please use cszuPrivs*; additional attributes used in authentication and authorization mechanisms for groups and users; schema based on **"Central System 'Z' of management Users (CSZU)"** standard.
+- cszuAttrs - additional attributes used in authentication and authorization mechanisms for groups and users; schema based on **"Central System 'Z' of management Users (CSZU)"** standard.
+
+> [!IMPORTANT]  
+> Object class `cszuAttrs` is deprecated, please use `cszuPrivs`. The name of `cszuPrivs` is more readable.
+
+- cszuPrivs - additional attributes used in authentication and authorization mechanisms for groups and users; schema based on **"Central System 'Z' of management Users (CSZU)"** standard.
 - cszuUser - additional attributes used in authentication and authorization mechanisms for users; schema based on **"Central System 'Z' of management Users (CSZU)"** standard.
 - cszuGroup - additional attributes used in authentication and authorization mechanisms for groups; schema based on **"Central System 'Z' of management Users (CSZU)"** standard.
 - aDPerson - additional attributes allowing the simulation of mechanisms characteristic for MS Active Directory (AD)
