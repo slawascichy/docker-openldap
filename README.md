@@ -147,7 +147,9 @@ docker image tag openldap:latest scisoftware/openldap:ubuntu-0.1
  ```
 docker image push -a scisoftware/openldap 
  ```
- 
+
+Published images you can find on DockerHub: [scisoftware/openldap](https://hub.docker.com/repository/docker/scisoftware/openldap/general).
+
 ## Run image
 
 Required environment variables:
