@@ -48,6 +48,9 @@ sn: Administrator
 description: Administrator
 userPassword: LDAP_TECHNICAL_USER_ENCRYPTED
 
+#######################################################################
+# LDAP-UI Manager
+#######################################################################
 dn: uid=ldapui,ou=Admins,LDAP_OLC_SUFFIX
 objectClass: person
 objectClass: top
@@ -57,3 +60,26 @@ sn: LDAP editor
 uid: ldapui
 description: User bind for connection to Fast and versatile LDAP editor https://github.com/dnknth/ldap-ui
 userPassword: LDAP_TECHNICAL_USER_ENCRYPTED
+
+#######################################################################
+# Kerberos entries required for configuration 
+#######################################################################
+dn: cn=Kerberos,LDAP_OLC_SUFFIX
+objectClass: krbContainer
+objectClass: top
+cn: Kerberos
+
+dn: uid=kdc-service,LDAP_OLC_SUFFIX
+uid: kdc-service
+objectClass: account
+objectClass: simpleSecurityObject
+userPassword: LDAP_TECHNICAL_USER_ENCRYPTED
+description: Account used for the Kerberos KDC
+
+dn: uid=kadmin-service,LDAP_OLC_SUFFIX
+uid: kadmin-service
+objectClass: account
+objectClass: simpleSecurityObject
+userPassword: LDAP_TECHNICAL_USER_ENCRYPTED
+description: Account used for the Kerberos Admin server
+

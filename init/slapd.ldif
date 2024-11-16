@@ -43,6 +43,7 @@ include: file:///etc/ldap/schema/013-rfc2307bis.ldif
 include: file:///etc/ldap/schema/014-samba.ldif
 include: file:///etc/ldap/schema/015-openssh-lpk.ldif
 include: file:///etc/ldap/schema/016-ldapns.ldif
+include: file:///etc/ldap/schema/017-kerberos.ldif
 
 # Frontend settings
 #
@@ -89,11 +90,23 @@ olcAccess: to attrs=shadowLastChange
   by self write 
   by anonymous auth 
   by * read
+olcAccess: to attrs=krbPrincipalKey 	
+  by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage 
+  by dn.exact="uid=kdc-service,LDAP_OLC_SUFFIX" read
+  by dn.exact="uid=kadmin-service,LDAP_OLC_SUFFIX" write
+  by self write
+  by anonymous auth
+  by * none
+olcAccess: to dn.subtree="cn=Kerberos,LDAP_OLC_SUFFIX"
+  by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage 
+  by dn.exact="uid=kdc-service,LDAP_OLC_SUFFIX" read
+  by dn.exact="uid=kadmin-service,LDAP_OLC_SUFFIX" write
+  by * none
 olcAccess: to dn.base="" 
   by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage 
   by dn="LDAP_ROOT_DN" manage 
   by anonymous auth 
-  by * read 
+  by * read
 olcAccess: to * 
   by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage 
   by dn="LDAP_ROOT_DN" manage 
