@@ -48,7 +48,7 @@ sn: Administrator
 description: Administrator
 userPassword: LDAP_TECHNICAL_USER_ENCRYPTED
 
-dn: uid=ldapui,ou=Admins,dc=scisoftware,dc=pl
+dn: uid=ldapui,ou=Admins,LDAP_OLC_SUFFIX
 objectClass: person
 objectClass: top
 objectClass: uidObject

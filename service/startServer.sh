@@ -85,5 +85,5 @@ fi
 # +=======+=================+===========================================================+
 
 ulimit -n 8192
-/usr/sbin/slapd -u openldap -g openldap -d $SERVER_DEBUG -h "$SLAPD_URLS" -F $SLAPD_OPTIONS > /var/log/slapd.log &
+/usr/sbin/slapd -u openldap -g openldap -d $SERVER_DEBUG -h "$SLAPD_URLS" -F $SLAPD_OPTIONS > /var/log/slapd.log 2>&1 &
 tail -f /var/log/slapd.log
