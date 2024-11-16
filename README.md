@@ -124,9 +124,9 @@ https://raw.githubusercontent.com/slawascichy/docker-openldap/refs/heads/main/do
 For building the image you should use docker command:
 
 ```shell
-docker build --no-cache -f Dockerfile -t scisoftware/openldap:ubuntu-0.1 .
+docker build -f Dockerfile -t scisoftware/openldap:ubuntu-24.04 .
 ```
-where ``ubuntu-0.1`` tag name is required by compositions (see composition definitions).
+where ``ubuntu-24.04`` tag name is required by compositions (see composition definitions).
 
 ### Push image to DockerHub
 
@@ -137,10 +137,10 @@ docker container ls
 docker container commit b9a8f7e273fa openldap:latest
  ```
 
- - We create a target image tag. Follow example where `ubuntu-0.1` is current version of image:
+ - We create a target image tag. Follow example where `ubuntu-24.04` is current version of image:
  ```shell
 docker image tag openldap:latest scisoftware/openldap:latest
-docker image tag openldap:latest scisoftware/openldap:ubuntu-0.1
+docker image tag openldap:latest scisoftware/openldap:ubuntu-24.04
  ```
  
  - Send created images into the world. Use the `-a` (or `--all-tags`) option to push all tags of a local image:

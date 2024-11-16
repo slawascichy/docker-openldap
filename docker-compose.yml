@@ -10,7 +10,7 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: /d/mercury/openldap	
+      device: /d/mercury/openldap
   slapd-d:
     driver: local
     driver_opts:
@@ -20,7 +20,7 @@ volumes:
  
 services:
   openldap:
-    image: scisoftware/openldap:ubuntu-0.1
+    image: scisoftware/openldap:ubuntu-24.04
     networks:
       - default-network
     environment:
