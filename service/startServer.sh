@@ -56,7 +56,7 @@ initDatabase() {
 
 DIR=/var/lib/ldap
 if [ "$(ls -A $LDAP_INIT_FLAG_FILE)" ]; then
-    echo "Starting LDAP..."
+    echo "Database is ready."
 else
     echo "Init database..."
     initDatabase
@@ -84,5 +84,8 @@ fi
 # | 32768 | (0x8000 none)   | only messages that get logged whatever log level is set   |
 # +=======+=================+===========================================================+
 
-/usr/sbin/slapd -u openldap -g openldap -d $SERVER_DEBUG -h "$SLAPD_URLS" -F $SLAPD_OPTIONS > /var/log/slapd.log 2>&1 &
-tail -f /var/log/slapd.log
+export LOG_FILE=/var/log/slapd.log
+touch $LOG_FILE
+echo "Starting LDAP deamon..."
+/usr/sbin/slapd -u openldap -g openldap -d $SERVER_DEBUG -h "$SLAPD_URLS" -F $SLAPD_OPTIONS >> $LOG_FILE 2>&1 &
+tail -f $LOG_FILE
