@@ -3,3 +3,4 @@
 /schemas-others/
 /.history/
 /slapd.log
+/ldap-conf-priv.env
