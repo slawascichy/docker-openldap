@@ -10,7 +10,7 @@ export LDAP_INIT_FILE=/etc/ldap/slapd.ldif
 export LDAP_BASE_FILE=/etc/ldap/base.ldif
 export WORKSPACE=/opt/modify
 export LDAP_INIT_FLAG_FILE=/var/lib/ldap/ldap.init
-
+ulimit -n 8192
 
 initDatabase() {
     LDAP_ROOT_PASSWD_ENCRYPTED=`slappasswd -h {SSHA} -s $LDAP_ROOT_PASSWD`
@@ -84,6 +84,5 @@ fi
 # | 32768 | (0x8000 none)   | only messages that get logged whatever log level is set   |
 # +=======+=================+===========================================================+
 
-ulimit -n 8192
 /usr/sbin/slapd -u openldap -g openldap -d $SERVER_DEBUG -h "$SLAPD_URLS" -F $SLAPD_OPTIONS > /var/log/slapd.log 2>&1 &
 tail -f /var/log/slapd.log
