@@ -1,0 +1,21 @@
+##############################################################################
+# Dodanie proxy do zewnętrznej instancji LDAP 
+#
+# Wymagane parametry:
+# --------------------
+# LDAP_BASED_OLC_SUFFIX      - sufiks bazy danych meta, proxy, docelowy np. "dc=scisoftware,dc=pl"
+# BIND_LDAP_URI              - URL wskazujący na zewnętrzną instancję LDAP np. "ldap://pluton.hgdb.org"
+# BIND_DN                    - identyfikator użytkownika, za pomocą którego realizowana będzie komunikacja
+#                              np. "CN=Administrator,CN=Users,DC=BOJANO,DC=LOCAL"
+# BIND_PASSWD_PLAINTEXT      - hasło użytkownika, za pomocą którego realizowana będzie komunikacja
+# BIND_BASE_CTX_SEARCH       - podstawowa gałąź wyszukiwania podłączanej instancji LDAP 
+#                              np. "CN=Users,DC=BOJANO,DC=LOCAL"
+# LDAP_PROXY_OU_NAME         - nazwa jednostki organizacyjnej pod jaką ma występować drzewo podłączanego LDAP'a
+##############################################################################
+dn: olcMetaSub=users,olcDatabase={3}meta,cn=config
+objectClass: olcMetaTargetConfig
+olcMetaSub: ${LDAP_PROXY_OU_NAME}
+olcDbURI: ${BIND_LDAP_URI}/ou=${LDAP_PROXY_OU_NAME},${LDAP_BASED_OLC_SUFFIX}
+olcDbIDAssertBind: binddn="${BIND_DN}" bindmethod=simple credentials=${BIND_PASSWD_PLAINTEXT}
+olcDbRebindAsUser: TRUE
+olcDbRewrite: suffixmassage "ou=${LDAP_PROXY_OU_NAME},${LDAP_BASED_OLC_SUFFIX}" "${BIND_BASE_CTX_SEARCH}"

@@ -1,0 +1,131 @@
+##############################################################################
+# MDB database definitions
+#
+# Utworzenie lokalnej bazy danych MDB
+#
+# Wymagane parametry:
+# --------------------
+# LDAP_LOCAL_OLC_SUFFIX      - sufiks lokalnej bazy danych mdb np. "dc=docker,dc=openldap" 
+# LDAP_BASED_OLC_SUFFIX      - sufiks bazy danych meta, proxy, docelowy np. "dc=scisoftware,dc=pl"
+# LDAP_ROOT_PASSWD_ENCRYPTED - zakodowane hasło super użytkownika, zbudowane na podstawie LDAP_ROOT_PASSWD_PLAINTEXT
+# LDAP_LOCAL_ROOT_DN         - DN super użytkownika z lokalnej bazy danych mdb. Parametr budowany na podstawie 
+#                              parametrów LDAP_ROOT_CN oraz LDAP_LOCAL_OLC_SUFFIX:
+#							   cn=${LDAP_ROOT_CN},${LDAP_LOCAL_OLC_SUFFIX} np. "cn=manager,dc=docker,dc=openldap"
+# LDAP_BASED_ROOT_DN         - DN super użytkownika z lokalnej bazy danych mdb. Parametr budowany na podstawie 
+#                              parametrów LDAP_ROOT_CN oraz LDAP_BASED_OLC_SUFFIX:
+#							   cn=${LDAP_ROOT_CN},${LDAP_BASED_OLC_SUFFIX} np. "cn=manager,dc=scisoftware,dc=pl" 
+# LDAP_OLC_ACCESS            - dodatkowe uprawnienia dostępu do '*' np. "by anonymous auth by * read"
+##############################################################################
+#
+dn: olcDatabase=mdb,cn=config
+objectClass: olcDatabaseConfig
+objectClass: olcMdbConfig
+olcDatabase: mdb
+olcDbMaxSize: 1073741824
+## Parametry nazewnictwa #####################################################
+olcSuffix: ${LDAP_LOCAL_OLC_SUFFIX}
+olcRootDN: ${LDAP_LOCAL_ROOT_DN}
+olcRootPW: ${LDAP_ROOT_PASSWD_ENCRYPTED}
+olcDbDirectory: /var/lib/ldap
+## Indeksy lokalnej bazy danych ##############################################
+olcDbIndex: objectClass pres,eq
+olcDbIndex: uid pres,eq
+olcDbIndex: cn,sn pres,eq,approx,sub
+olcDbIndex: mail pres,eq,sub
+olcDbIndex: loginShell pres,eq
+olcDbIndex: sudoUser,sudoHost pres,eq
+olcDbIndex: allowSystem pres,eq
+olcDbIndex: sAMAccountName pres,eq
+olcDbIndex: userPrincipalName pres,eq
+#
+## Dostępy ###################################################################
+#
+# Dostęp do atrybutu z historią haseł systemu samba ##########################
+olcAccess: to attrs=sambaPasswordHistory,sambaPwdLastSet,userPassword,sambaNTPassword 
+  by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage 
+# Użytkownicy z lokalnej bazy danych (bazy mdb).
+# ${LDAP_LOCAL_ROOT_DN} to zbudowany wcześniej lokalny DN super użytkownika
+  by dn="${LDAP_LOCAL_ROOT_DN}" manage
+# Predefiniowana organizacja administratorów w bazie lokalnej 
+  by dn.children="ou=Admins,${LDAP_LOCAL_OLC_SUFFIX}" write 
+# Predefiniowana organizacja kont technicznych w bazie lokalnej 
+  by dn.children="ou=Technical,${LDAP_LOCAL_OLC_SUFFIX}" read
+# Użytkownicy z lokalnej bazy danych za pośrednictwem proxy (bazy meta). 
+# Baza lokalna bindowana jest do ou=local,${LDAP_BASED_OLC_SUFFIX}
+# ${LDAP_BASED_ROOT_DN} to zbudowany wcześniej DN super użytkownika w bazie meta.
+  by dn="${LDAP_BASED_ROOT_DN}" manage
+# Predefiniowana organizacja administratorów w bazie lokalnej widziana przez proxy (bazę meta).
+  by dn.children="ou=Admins,ou=local,${LDAP_BASED_OLC_SUFFIX}" write 
+# Predefiniowana organizacja kont technicznych w bazie lokalnej widziana przez proxy (bazę meta).
+  by dn.children="ou=Technical,ou=local,${LDAP_BASED_OLC_SUFFIX}" read 
+  by self write 
+  by anonymous auth 
+  by * none
+#
+# Dostęp do atrybutu z historią haseł linuksowych haseł ######################
+olcAccess: to attrs=shadowLastChange 	
+  by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage 
+# Użytkownicy z lokalnej bazy danych (bazy mdb).
+  by dn="${LDAP_LOCAL_ROOT_DN}" manage 
+# Predefiniowana organizacja administratorów w bazie lokalnej 
+  by dn.children="ou=Admins,${LDAP_LOCAL_OLC_SUFFIX}" write 
+# Predefiniowana organizacja kont technicznych w bazie lokalnej 
+  by dn.children="ou=Technical,${LDAP_LOCAL_OLC_SUFFIX}" read
+# Użytkownicy z lokalnej bazy danych za pośrednictwem proxy (bazy meta). 
+# Baza lokalna bindowana jest do ou=local,${LDAP_BASED_OLC_SUFFIX}
+  by dn="${LDAP_BASED_ROOT_DN}" manage 
+# Predefiniowana organizacja administratorów w bazie lokalnej widziana przez proxy (bazę meta).
+  by dn.children="ou=Admins,ou=local,${LDAP_BASED_OLC_SUFFIX}" write 
+# Predefiniowana organizacja kont technicznych w bazie lokalnej widziana przez proxy (bazę meta).
+  by dn.children="ou=Technical,ou=local,${LDAP_BASED_OLC_SUFFIX}" read 
+  by self write 
+  by anonymous auth 
+  by * read
+#
+# Dostęp do atrybutu z kluczem kerberos'a ####################################
+olcAccess: to attrs=krbPrincipalKey 	
+  by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage 
+# Użytkownicy z lokalnej bazy danych (bazy mdb).
+  by dn.exact="uid=kdc-service,${LDAP_LOCAL_OLC_SUFFIX}" read
+  by dn.exact="uid=kadmin-service,${LDAP_LOCAL_OLC_SUFFIX}" write
+# Użytkownicy z lokalnej bazy danych za pośrednictwem proxy (bazy meta). 
+# Baza lokalna bindowana jest do ou=local,${LDAP_BASED_OLC_SUFFIX}
+  by dn.exact="uid=kdc-service,ou=local,${LDAP_BASED_OLC_SUFFIX}" read
+  by dn.exact="uid=kadmin-service,ou=local,${LDAP_BASED_OLC_SUFFIX}" write
+  by self write
+  by anonymous auth
+  by * none
+#
+# Dostęp do lokalnej gałęzi kerberos'a via mdb ###############################
+olcAccess: to dn.subtree="cn=Kerberos,LDAP_OLC_SUFFIX"
+  by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage 
+# Użytkownicy z lokalnej bazy danych (bazy mdb).
+  by dn.exact="uid=kdc-service,LDAP_OLC_SUFFIX" read
+  by dn.exact="uid=kadmin-service,LDAP_OLC_SUFFIX" write
+  by * none
+#
+# Dostęp do lokalnego drzewa głównego ########################################
+# Do lokalnego drzewa głównego mają dostęp tylko super użytkownicy
+olcAccess: to dn.base="" 
+  by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage 
+# ${LDAP_LOCAL_ROOT_DN} to zbudowany wcześniej lokalny DN super użytkownika
+  by dn="${LDAP_LOCAL_ROOT_DN}" manage 
+# ${LDAP_BASED_ROOT_DN} to zbudowany wcześniej DN super użytkownika w bazie meta.
+  by dn="${LDAP_BASED_ROOT_DN}" manage 
+  by anonymous auth 
+  by * read
+#
+# Pozostały dostęp ###########################################################
+olcAccess: to * 
+  by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage 
+# Użytkownicy z lokalnej bazy danych  
+# ${LDAP_LOCAL_ROOT_DN} to zbudowany wcześniej lokalny DN super użytkownika
+  by dn="${LDAP_LOCAL_ROOT_DN}" manage 
+# Predefiniowana organizacja administratorów w bazie lokalnej 
+  by dn.children="ou=Admins,${LDAP_LOCAL_OLC_SUFFIX}" write 
+# Użytkownicy z lokalnej bazy danych za pośrednictwem proxy (bazy meta). 
+# Baza lokalna bindowana jest do ou=local,${LDAP_BASED_OLC_SUFFIX}
+  by dn="${LDAP_BASED_ROOT_DN}" manage 
+# Predefiniowana organizacja administratorów w bazie lokalnej widziana przez proxy (bazę meta).
+  by dn.children="ou=Admins,ou=local,${LDAP_BASED_OLC_SUFFIX}" write 
+  ${LDAP_OLC_ACCESS}
