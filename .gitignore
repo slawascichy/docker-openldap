@@ -5,3 +5,4 @@
 /slapd.log
 /ldap-conf-priv.env
 /LDAPandKerberos/
+/tmp/
