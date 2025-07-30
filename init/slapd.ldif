@@ -45,16 +45,27 @@ include: file:///etc/ldap/schema/015-openssh-lpk.ldif
 include: file:///etc/ldap/schema/016-ldapns.ldif
 include: file:///etc/ldap/schema/017-kerberos.ldif
 
+#######################################################################
 # Frontend settings
+#######################################################################
 #
 dn: olcDatabase=frontend,cn=config
 objectClass: olcDatabaseConfig
 objectClass: olcFrontendConfig
 olcDatabase: frontend
-#
 
 #######################################################################
-# LMDB database definitions
+# Monitor settings
+#######################################################################
+#
+dn: olcDatabase=monitor,cn=config
+objectClass: olcDatabaseConfig
+olcDatabase: monitor
+olcRootDN: cn=config
+olcMonitoring: FALSE
+
+#######################################################################
+# MDB database definitions
 #######################################################################
 #
 dn: olcDatabase=mdb,cn=config
@@ -112,9 +123,3 @@ olcAccess: to *
   by dn="LDAP_ROOT_DN" manage 
   by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write 
   LDAP_OLC_ACCESS
-
-dn: olcDatabase=monitor,cn=config
-objectClass: olcDatabaseConfig
-olcDatabase: monitor
-olcRootDN: cn=config
-olcMonitoring: FALSE
