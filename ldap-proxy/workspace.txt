@@ -1,5 +1,5 @@
 ##############################################################################
-# OpenLDAP as Proxy
+# OpenLDAP with Proxy
 # https://docs.microfocus.com/doc/425/9.80/configureldapproxy
 # https://serverfault.com/questions/866542/openldap-meta-backend-olc-configuration
 #
@@ -13,7 +13,7 @@ docker build -f Dockerfile -t scisoftware/openldap-proxy:ubuntu-0.1 .
 # sudo su - 
 docker build -f Dockerfile -t scisoftware/openldap-proxy:ubuntu-24.04 .
 
-# Uruchomienie kontenera
+# Uruchomienie kontenera bez kompozycji
 docker run --name openldap-proxy -p 389:389 -p 636:636 ^
  --env LDAP_ORG_DC="docker" ^
  --env LDAP_LOCAL_OLC_SUFFIX=dc=docker,dc=openldap ^
@@ -21,12 +21,15 @@ docker run --name openldap-proxy -p 389:389 -p 636:636 ^
  --env LDAP_ROOT_CN=manager ^
  --env LDAP_LOCAL_ROOT_DN=cn=manager,dc=docker,dc=openldap ^
  --env LDAP_BASED_ROOT_DN=cn=manager,dc=scisoftware,dc=pl ^
- --env LDAP_ROOT_PASSWD=secret ^
+ --env LDAP_ROOT_PASSWD_PLAINTEXT=secret ^
  --env SERVER_DEBUG=-1 ^
  --env LDAP_OLC_ACCESS="by anonymous auth by * none" ^
  --volume slapd_proxy_database:/var/lib/openldap ^
  --volume slapd_proxy_config:/etc/openldap/slapd.d ^
  --detach scisoftware/openldap-proxy:ubuntu-24.04
+
+# Uruchomienie kontenera z kompozycją
+docker compose -f docker-compose.yml --env-file ldap-conf.env up
 
 ##############################################################################
 # Publikowanie obrazów

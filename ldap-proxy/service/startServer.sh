@@ -15,7 +15,7 @@ ulimit -n 8192
 
 
 initDatabase() {
-    export LDAP_ROOT_PASSWD_ENCRYPTED=`slappasswd -h {SSHA} -s $LDAP_ROOT_PASSWD`
+    export LDAP_ROOT_PASSWD_ENCRYPTED=`slappasswd -h {SSHA} -s $LDAP_ROOT_PASSWD_PLAINTEXT`
     echo "Init slapd.conf..."
     rm -rf /var/lib/ldap/*
 	rm -rf $SLAPD_OPTIONS/*

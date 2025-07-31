@@ -1,0 +1,41 @@
+networks:
+  default-network:
+    driver: bridge
+
+volumes:
+  openldap:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /d/mercury/openldap-proxy
+  slapd-d:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /d/mercury/slapd.d-proxy 
+ 
+services:
+  openldap-proxy:
+    image: scisoftware/openldap-proxy:ubuntu-24.04
+    networks:
+      - default-network
+    environment:
+      - LDAP_ORG_DC=${LDAP_ORG_DC}
+      - LDAP_LOCAL_OLC_SUFFIX=${LDAP_LOCAL_OLC_SUFFIX}
+      - LDAP_BASED_OLC_SUFFIX=${LDAP_BASED_OLC_SUFFIX}
+      - LDAP_ROOT_CN=${LDAP_ROOT_CN}
+      - LDAP_LOCAL_ROOT_DN=cn=${LDAP_ROOT_CN},${LDAP_LOCAL_OLC_SUFFIX}
+      - LDAP_BASED_ROOT_DN=cn=${LDAP_ROOT_CN},${LDAP_BASED_OLC_SUFFIX}
+      - LDAP_ROOT_PASSWD_PLAINTEXT=${LDAP_ROOT_PASSWD_PLAINTEXT}
+      - LDAP_TECHNICAL_USER_CN=${LDAP_TECHNICAL_USER_CN:-FrontendAccount}
+      - LDAP_TECHNICAL_USER_PASSWD=${LDAP_TECHNICAL_USER_PASSWD:-secret}
+      - LDAP_OLC_ACCESS=${LDAP_OLC_ACCESS:-by * read}
+      - SERVER_DEBUG=${SERVER_DEBUG:-0}
+    volumes: 
+      - openldap:/var/lib/ldap:rw
+      - slapd-d:/etc/ldap/slapd.d:rw
+    ports:
+      - "389:389"
+      - "636:636"
