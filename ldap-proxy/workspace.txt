@@ -39,15 +39,14 @@ docker compose -f docker-compose.yml --env-file ldap-conf.env up
 # -----------------------
 # 1. Robimy tag obrazu z kontenera
 docker container ls
-docker container commit b9a8f7e273fa openldap:latest
-#                 gdzie b9a8f7e273fa to identyfikator działającego kontenera
+docker container commit 717e013b3278 openldap-proxy:latest
+#                 gdzie 717e013b3278 to identyfikator działającego kontenera
 # 2. Tworzymy docelowy tag obrazu (przykład)
-docker image tag openldap:latest scisoftware/openldap:latest
-docker image tag openldap:latest scisoftware/openldap:ubuntu-0.1
-# gdzie ubuntu-0.1 to obecna wersja obrazu
+docker image tag openldap-proxy:latest scisoftware/openldap-proxy:latest
+docker image tag openldap-proxy:latest scisoftware/openldap-proxy:ubuntu-24.04
+# gdzie ubuntu-24.04 to obecna wersja obrazu
 # 3. wysyłamy w świat
-docker image push -a scisoftware/openldap
-
+docker image push -a scisoftware/openldap-proxy
 
 ##############################################################################
 # Skrypt do tworzenia metabazy z proxy do LDAP zewnętrznego
