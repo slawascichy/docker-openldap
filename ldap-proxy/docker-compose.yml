@@ -14,11 +14,18 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: /d/mercury/slapd.d-proxy 
+      device: /d/mercury/slapd.d-proxy
+  ca-certificates:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /d/mercury/openldap-cacerts	  
  
 services:
   openldap-proxy:
     image: scisoftware/openldap-proxy:ubuntu-24.04
+    hostname: openldap-proxy
     networks:
       - default-network
     environment:
@@ -32,10 +39,12 @@ services:
       - LDAP_TECHNICAL_USER_CN=${LDAP_TECHNICAL_USER_CN:-FrontendAccount}
       - LDAP_TECHNICAL_USER_PASSWD=${LDAP_TECHNICAL_USER_PASSWD:-secret}
       - LDAP_OLC_ACCESS=${LDAP_OLC_ACCESS:-by * read}
-      - SERVER_DEBUG=${SERVER_DEBUG:-0}
+      - LDAP_TLS_CACERT=${LDAP_TLS_CACERT:-IBPMPRO_CA.crt}
+      - SERVER_DEBUG=${SERVER_DEBUG:-32}
     volumes: 
       - openldap:/var/lib/ldap:rw
       - slapd-d:/etc/ldap/slapd.d:rw
+      - ca-certificates:/usr/local/share/ca-certificate:rw
     ports:
       - "389:389"
       - "636:636"

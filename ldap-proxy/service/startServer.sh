@@ -50,9 +50,28 @@ initDatabase() {
     SLAPD_PID=`cat /var/run/slapd/slapd.pid`
     kill $SLAPD_PID
     echo "Applay init scripts END"
+
 }
 
+setTLS(){
+	cat <<EOF > /etc/ldap/ldap.conf
+#
+# LDAP Defaults
+#
+#BASE   ${LDAP_LOCAL_OLC_SUFFIX}
+#URI    ldap://localhost
+#SIZELIMIT      12
+#TIMELIMIT      15
+#DEREF          never
 
+# TLS certificates (needed for GnuTLS)
+TLS_CACERT     /usr/local/share/ca-certificate/${LDAP_TLS_CACERT}
+TLS_CACERTDIR  /usr/local/share/ca-certificate
+TLS_REQCERT    never
+EOF
+}
+
+# Before starting - START
 DIR=/var/lib/ldap
 if [ "$(ls -A $LDAP_INIT_FLAG_FILE)" ]; then
     echo "Database is ready."
@@ -60,6 +79,9 @@ else
     echo "Init database..."
     initDatabase
 fi
+# Setting TLS for communication for LDAP clients
+setTLS
+# Before starting - END
 
 # Debugging Levels
 # +=======+=================+===========================================================+

@@ -6,59 +6,39 @@ echo "**************************"
 
 export LDAP_CONF_DIR=/etc/ldap/
 
-validate() {
-	if [ -z ${BIND_LDAP_URI} ]; then
+
+printMissingArgumentError() {
       cat <<EOF
 
-Błąd wywołania skryptu: Brak argumentu BIND_LDAP_URI
-Użyj opcji '--help' aby wyświetlić pomoc np. ./add-proxy-to-external-ldap.sh --help
+Script execution error: Missing $1 argument
+Use the '--help' option to display help, e.g., ./add-proxy-to-external-ldap.sh --help
 --
 EOF
+}
+
+validate() {
+	if [ -z ${BIND_LDAP_URI} ]; then
+	    printMissingArgumentError "BIND_LDAP_URI"
 	    exit 1
 	fi
 	if [ -z ${BIND_DN} ]; then
-      cat <<EOF
-
-Błąd wywołania skryptu: Brak argumentu BIND_DN
-Użyj opcji '--help' aby wyświetlić pomoc np. ./add-proxy-to-external-ldap.sh --help
---
-EOF
+	    printMissingArgumentError "BIND_DN"
 	    exit 1
 	fi
 	if [ -z ${BIND_PASSWD_PLAINTEXT} ]; then
-      cat <<EOF
-
-Błąd wywołania skryptu: Brak argumentu BIND_PASSWD_PLAINTEXT
-Użyj opcji '--help' aby wyświetlić pomoc np. ./add-proxy-to-external-ldap.sh --help
---
-EOF
+	    printMissingArgumentError "BIND_PASSWD_PLAINTEXT"
 	    exit 1
 	fi
 	if [ -z ${BIND_BASE_CTX_SEARCH} ]; then
-      cat <<EOF
-
-Błąd wywołania skryptu: Brak argumentu BIND_BASE_CTX_SEARCH
-Użyj opcji '--help' aby wyświetlić pomoc np. ./add-proxy-to-external-ldap.sh --help
---
-EOF
+	    printMissingArgumentError "BIND_BASE_CTX_SEARCH"
 	    exit 1
 	fi
 	if [ -z ${LDAP_PROXY_OU_NAME} ]; then
-      cat <<EOF
-
-Błąd wywołania skryptu: Brak argumentu LDAP_PROXY_OU_NAME
-Użyj opcji '--help' aby wyświetlić pomoc np. ./add-proxy-to-external-ldap.sh --help
---
-EOF
+	    printMissingArgumentError "LDAP_PROXY_OU_NAME"
 	    exit 1
 	fi
 	if [ -z ${LDAP_BASED_OLC_SUFFIX} ]; then
-      cat <<EOF
-
-Błąd wywołania skryptu: Brak argumentu LDAP_BASED_OLC_SUFFIX
-Użyj opcji '--help' aby wyświetlić pomoc np. ./add-proxy-to-external-ldap.sh --help
---
-EOF
+	    printMissingArgumentError "LDAP_BASED_OLC_SUFFIX"
 	    exit 1
 	fi
 }
@@ -66,25 +46,25 @@ EOF
 printHelp() 
 {
   cat <<EOF
-Skrypt wymaga argumentów:
- BIND_LDAP_URI=<wartość>         - URL wskazujący na zewnętrzną instancję LDAP np. <ldap|ldaps>://example.com
- BIND_DN=<wartość>               - identyfikator użytkownika, za pomocą którego realizowana będzie komunikacja
- BIND_PASSWD_PLAINTEXT=<wartość> - hasło użytkownika, za pomocą którego realizowana będzie komunikacja
- BIND_BASE_CTX_SEARCH=<wartość>  - podstawowa gałąź wyszukiwania podłączanej instancji LDAP
- LDAP_PROXY_OU_NAME=<wartość>    - nazwa jednostki organizacyjnej pod jaką ma występować drzewo podłączanego LDAP'a
+The script requires arguments:
+ BIND_LDAP_URI=<value>         - URL pointing to an external LDAP instance, e.g. <ldap|ldaps>://example.com
+ BIND_DN=<value>               - user DN through which communication will be carried out
+ BIND_PASSWD_PLAINTEXT=<value> - user password through which communication will be carried out
+ BIND_BASE_CTX_SEARCH=<value>  - the primary search branch of the LDAP instance being connected
+ LDAP_PROXY_OU_NAME=<value>    - the name of the organizational unit under which the connected LDAP tree should appear
 EOF
   if [ -z ${LDAP_BASED_OLC_SUFFIX} ]; then
     cat <<EOF
- LDAP_BASED_OLC_SUFFIX=<wartość> - docelowy sufiks bazy danych meta, proxy np. dc=example,dc=local
+ LDAP_BASED_OLC_SUFFIX=<value> - target meta database suffix, proxy e.g. dc=example,dc=local
 EOF
   fi
   cat <<EOF
-Opcjonalnie można użyć parametrów jednej z opcji:
- --help                          - prezentacja danych pomocy uruchamiania skryptu
- --test                          - testowanie poprawności polecenia
+Optionally, you can use the parameters of one of the options:
+ --help                          - presentation of script run help data
+ --test                          - testing the correctness of the command
 
 --
-Przykład uruchomienia skryptu tworzącego bazę proxy:
+Example of running a script creating a proxy database:
 ./add-proxy-to-external-ldap.sh \\
   BIND_LDAP_URI=ldap://example.com \\
   BIND_DN=CN=Administrator,CN=Users,DC=example,DC=com \\
@@ -104,7 +84,7 @@ EOF
 
   cat <<EOF
 --
-Przykład testowania prawidłowości uruchomienia skryptu:
+Example of testing whether a script runs correctly:
 ./add-proxy-to-external-ldap.sh \\
   BIND_LDAP_URI=ldap://example.com \\
   BIND_DN=CN=Administrator,CN=Users,DC=example,DC=com \\
@@ -189,11 +169,12 @@ if ! [ -z ${TEST} ]; then
    -s sub "(objectClass=*)" dn | grep -c "dn:"`
   if ! [ ${CONNECTION_TEST} -ne 0 ]; then 
     # Błąd połaczenia do zewnętrznego LDA
-    echo "[ERROR] Błąd definicji połaczenia do zewnętrznego LDAP. Błąd połączenia."
+    echo "[ERROR] External LDAP connection definition error. Connection error."
+    exit 1
   fi
   cat ../init/04-add-proxy-to-external-ldap.ldif | envsubst
   echo ""
-  echo "[SUCESS] Nawiązano połączenie. Sprawdź wizulanie czy wszystko zostało poprawnie ustawione w komendzie LDIF."
+  echo "[SUCESS] Connection established. Visually check that everything is set correctly in the LDIF command."
 else
   LDIF_FILE=${LDAP_CONF_DIR}/create-meta-database-${LDAP_PROXY_OU_NAME}.ldif
   cat ../init/04-add-proxy-to-external-ldap.ldif | envsubst > $LDIF_FILE

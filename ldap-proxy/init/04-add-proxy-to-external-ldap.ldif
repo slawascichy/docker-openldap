@@ -1,16 +1,14 @@
 ##############################################################################
-# Dodanie proxy do zewnętrznej instancji LDAP 
+# Adding a proxy to an external LDAP instance
 #
-# Wymagane parametry:
+# Required parameters:
 # --------------------
-# LDAP_BASED_OLC_SUFFIX      - sufiks bazy danych meta, proxy, docelowy np. "dc=scisoftware,dc=pl"
-# BIND_LDAP_URI              - URL wskazujący na zewnętrzną instancję LDAP np. "ldap://pluton.hgdb.org"
-# BIND_DN                    - identyfikator użytkownika, za pomocą którego realizowana będzie komunikacja
-#                              np. "CN=Administrator,CN=Users,DC=BOJANO,DC=LOCAL"
-# BIND_PASSWD_PLAINTEXT      - hasło użytkownika, za pomocą którego realizowana będzie komunikacja
-# BIND_BASE_CTX_SEARCH       - podstawowa gałąź wyszukiwania podłączanej instancji LDAP 
-#                              np. "CN=Users,DC=BOJANO,DC=LOCAL"
-# LDAP_PROXY_OU_NAME         - nazwa jednostki organizacyjnej pod jaką ma występować drzewo podłączanego LDAP'a
+# LDAP_BASED_OLC_SUFFIX - suffix for META database, proxy, target database, e.g. "dc=scisoftware,dc=pl"
+# BIND_LDAP_URI         - URL pointing to the external LDAP instance, e.g. "ldap://pluton.hgdb.org"
+# BIND_DN               - user DN for communication e.g. "CN=Administrator,CN=Users,DC=BOJANO,DC=LOCAL"
+# BIND_PASSWD_PLAINTEXT - password for the user for communication
+# BIND_BASE_CTX_SEARCH  - base search branch of the connecting LDAP instance e.g. "CN=Users,DC=BOJANO,DC=LOCAL"
+# LDAP_PROXY_OU_NAME    - name of the organizational unit under which the connecting LDAP tree will appear
 ##############################################################################
 dn: olcMetaSub=${LDAP_PROXY_OU_NAME},olcDatabase={3}meta,cn=config
 objectClass: olcMetaTargetConfig
@@ -19,3 +17,4 @@ olcDbURI: ${BIND_LDAP_URI}/ou=${LDAP_PROXY_OU_NAME},${LDAP_BASED_OLC_SUFFIX}
 olcDbIDAssertBind: binddn="${BIND_DN}" bindmethod=simple credentials="${BIND_PASSWD_PLAINTEXT}"
 olcDbRebindAsUser: TRUE
 olcDbRewrite: suffixmassage "ou=${LDAP_PROXY_OU_NAME},${LDAP_BASED_OLC_SUFFIX}" "${BIND_BASE_CTX_SEARCH}"
+olcDbStartTLS: none

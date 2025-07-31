@@ -28,8 +28,12 @@ docker run --name openldap-proxy -p 389:389 -p 636:636 ^
  --volume slapd_proxy_config:/etc/openldap/slapd.d ^
  --detach scisoftware/openldap-proxy:ubuntu-24.04
 
-# Uruchomienie kontenera z kompozycją
+# Uruchomienie kompozycji podstawowej (tylko kontener openldap)
 docker compose -f docker-compose.yml --env-file ldap-conf.env up
+
+# Uruchomienie kompozycji z UI
+docker compose -f docker-compose-with-ui.yml --env-file ldap-conf.env up -d
+
 
 ##############################################################################
 # Publikowanie obrazów
@@ -39,8 +43,8 @@ docker compose -f docker-compose.yml --env-file ldap-conf.env up
 # -----------------------
 # 1. Robimy tag obrazu z kontenera
 docker container ls
-docker container commit 717e013b3278 openldap-proxy:latest
-#                 gdzie 717e013b3278 to identyfikator działającego kontenera
+docker container commit db6b46a77a2c openldap-proxy:latest
+#                 gdzie db6b46a77a2c to identyfikator działającego kontenera
 # 2. Tworzymy docelowy tag obrazu (przykład)
 docker image tag openldap-proxy:latest scisoftware/openldap-proxy:latest
 docker image tag openldap-proxy:latest scisoftware/openldap-proxy:ubuntu-24.04
@@ -81,6 +85,7 @@ Re-enter new password : uTkyhUvPpw
 #
 ldapsearch -x -D "uid=slawas,ou=People,dc=docker,dc=openldap" -W -b "uid=slawas,ou=People,dc=docker,dc=openldap" "(objectClass=*)"
 ldapsearch -x -D "uid=slawas,ou=People,ou=local,dc=scisoftware,dc=pl" -W -b "uid=slawas,ou=People,ou=local,dc=scisoftware,dc=pl" "(objectClass=*)"
+ldapsearch -x -D "uid=ldapui,ou=Admins,ou=local,dc=scisoftware,dc=pl" -w secret -b "ou=ibpm.pro,dc=scisoftware,dc=pl" -s sub "(objectClass=*)" dn
 
 ##############################################################################
 # Pobieranie definicji reguł uprawnień
@@ -102,6 +107,8 @@ ldapsearch -x -H ldap://pluton.hgdb.org -b "CN=Users,DC=BOJANO,DC=LOCAL" -D "CN=
 ldapsearch -x -D "cn=manager,DC=admin,DC=com" -w uTkyhUvPpw -b "dc=example,dc=com" -H ldap://localhost
 ldapsearch -x -D "cn=manager,dc=example,dc=com" -w uTkyhUvPpw -b "dc=example,dc=com" -H ldap://localhost
 ldapsearch -x -LLL -H ldap://pluton.hgdb.org -D "CN=Administrator,CN=Users,DC=BOJANO,DC=LOCAL" -w OnIbSlmz#3001 -b"CN=Users,DC=BOJANO,DC=LOCAL" -s sub "(objectClass=*)" cn
+
+ldapmodify -Y EXTERNAL -H ldapi:/// -f modify_mdb_acl_6.ldif
 
 
 ##############################################################################
@@ -151,3 +158,8 @@ uid: slawas
 uidNumber: 1001
 loginShell: /bin/bash
 userPassword:: e1NTSEF9Wmg3bW9FQm1qbnBtZ1hEL0VMNUdHdW03VFhXODBJc3U=
+
+##############################################################################
+# Opracowanie GUI
+
+
