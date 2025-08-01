@@ -35,7 +35,11 @@ RUN apt clean && \
 	rm -fr /etc/ldap/slapd.d
 
 
-RUN mkdir -p /opt/init && mkdir -p /opt/modify && mkdir -p /opt/service && mkdir -p /opt/cacerts
+RUN mkdir -p /opt/init && \
+    mkdir -p /opt/modify && \
+	mkdir -p /opt/service && \
+	mkdir -p /opt/cacerts && \
+	mkdir -p /opt/workspace
 # Kopiowanie niezbędnych do konfiguracji plików - START
 # cp schemas/* /etc/ldap/schema
 COPY schemas/* /etc/ldap/schema
@@ -45,6 +49,7 @@ COPY init/* /opt/init
 COPY modify/* /opt/modify
 # cp -r service/* /opt/service/
 COPY service/* /opt/service
+COPY workspace/* /opt/workspace
 # Kopiowanie niezbędnych do konfiguracji plików - KONIEC
 
 RUN chmod a-x /etc/ldap/schema/* \

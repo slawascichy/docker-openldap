@@ -33,7 +33,13 @@ volumes:
       o: bind
       type: none
       device: /d/mercury/phpldapadmin/ldap-certs
- 
+  lapd-workspace:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /d/workspace/git/docker-openldap/ldap-proxy/workspace	  
+
 services:
   openldap-proxy:
     image: scisoftware/openldap-proxy:ubuntu-24.04
@@ -57,6 +63,7 @@ services:
       - openldap:/var/lib/ldap:rw
       - slapd-d:/etc/ldap/slapd.d:rw
       - ca-certificates:/usr/local/share/ca-certificate:rw
+      - lapd-workspace:/opt/workspace:rw
     ports:
       - "389:389"
       - "636:636"

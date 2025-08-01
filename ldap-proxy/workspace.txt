@@ -60,7 +60,7 @@ docker image push -a scisoftware/openldap-proxy
   BIND_DN=CN=Administrator,CN=Users,DC=BOJANO,DC=LOCAL \
   BIND_PASSWD_PLAINTEXT=secret \
   BIND_BASE_CTX_SEARCH=CN=Users,DC=BOJANO,DC=LOCAL \
-  LDAP_PROXY_OU_NAME=pluton \
+  LDAP_PROXY_OU_NAME=pluton --addADAttributesMapping \
   --test
   
 # Dodanie metabazy konfiguracji połączenia
@@ -69,7 +69,7 @@ docker image push -a scisoftware/openldap-proxy
   BIND_DN=CN=Administrator,CN=Users,DC=BOJANO,DC=LOCAL \
   BIND_PASSWD_PLAINTEXT=secret \
   BIND_BASE_CTX_SEARCH=CN=Users,DC=BOJANO,DC=LOCAL \
-  LDAP_PROXY_OU_NAME=pluton
+  LDAP_PROXY_OU_NAME=pluton --addADAttributesMapping 
 
 ##############################################################################
 # Szyfrowanie hasła użytkownika w LDAP
