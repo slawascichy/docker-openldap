@@ -60,8 +60,9 @@ EOF
   fi
   cat <<EOF
 Optionally, you can use the parameters of one of the options:
- --help                          - presentation of script run help data
- --test                          - testing the correctness of the command
+ --help                        - presentation of script run help data
+ --test                        - testing the correctness of the command
+ --addADAttributesMapping      - adds Mapping of attribute names from external AD to local OpenLDAP
 
 --
 Example of running a script creating a proxy database:
@@ -106,18 +107,22 @@ EOF
 
 setParameter() 
 {
-  if [ ${1} == "--help" ]; then
-    printHelp
-    exit 1
-  else 
-  if [ ${1} == "--test" ]; then
-    export TEST=1
-  else
-    export $1
-  fi
-  fi
+   case "${1}" in
+      --help)
+        printHelp
+        exit 0
+        ;;
+      --test)
+        export TEST=1
+        ;;
+      --addADAttributesMapping)
+        export ADD_ATTR_MAPPING=1
+        ;;
+      *)
+       export $1
+       ;;
+  esac
 }
-
 
 if ! [ -z ${1} ]; then
   setParameter $1
@@ -158,6 +163,10 @@ if ! [ -z ${7} ]; then
   setParameter $7
 fi
 
+if ! [ -z ${8} ]; then
+  setParameter $8
+fi
+
 validate
 
 if ! [ -z ${TEST} ]; then
@@ -174,11 +183,20 @@ if ! [ -z ${TEST} ]; then
   fi
   cat ../init/04-add-proxy-to-external-ldap.ldif | envsubst
   echo ""
+  echo ""
+  echo "--"
+  if ! [ -z ${ADD_ATTR_MAPPING} ]; then
+  	echo "Mapping of attribute names from external AD named ${LDAP_PROXY_OU_NAME} to local OpenLDAP will be added"
+  fi
   echo "[SUCESS] Connection established. Visually check that everything is set correctly in the LDIF command."
 else
   LDIF_FILE=${LDAP_CONF_DIR}/create-meta-database-${LDAP_PROXY_OU_NAME}.ldif
   cat ../init/04-add-proxy-to-external-ldap.ldif | envsubst > $LDIF_FILE
   ldapadd -Y EXTERNAL -H ldapi:/// -f $LDIF_FILE
+  
+  if ! [ -z ${ADD_ATTR_MAPPING} ]; then
+    ./add-mapping-of-attribute-names-AD-to-OpenLDAP.sh ${LDAP_PROXY_OU_NAME}
+  fi
 fi
 
 exit 0
