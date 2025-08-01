@@ -1,0 +1,120 @@
+########################################################
+# Temat do rozkminienia:
+# OpenLDAP as proxy to AD
+# https://wiki.samba.org/index.php/OpenLDAP_as_proxy_to_AD
+########################################################
+
+# Budowanie kontenera
+docker build -f Dockerfile -t scisoftware/openldap:ubuntu-0.1 .
+sudo \ 
+docker build -f Dockerfile -t scisoftware/openldap:ubuntu-24.04 .
+
+# Publikowanie obrazów
+# Dokumentacja poleca by bazować na działającym kontenerze - w sumie masz wtedy pewność, że obraz działa
+# -----------------------
+# OpenLDAP
+# -----------------------
+# 1. Robimy tag obrazu z kontenera
+docker container ls
+docker container commit b9a8f7e273fa openldap:latest
+#                 gdzie b9a8f7e273fa to identyfikator działającego kontenera
+# 2. Tworzymy docelowy tag obrazu (przykład)
+docker image tag openldap:latest scisoftware/openldap:latest
+docker image tag openldap:latest scisoftware/openldap:ubuntu-0.1
+# gdzie ubuntu-0.1 to obecna wersja obrazu
+# 3. wysyłamy w świat
+docker image push -a scisoftware/openldap
+
+export LDAP_ORG_DC=sample
+export LDAP_OLC_SUFFIX=dc=${LDAP_ORG_DC},dc=example,dc=com
+export LDAP_ROOT_CN=Manager
+export LDAP_ROOT_DN=cn=${LDAP_ROOT_CN},${LDAP_OLC_SUFFIX}
+export LDAP_ROOT_PASSWD=secret
+export LDAP_INIT_FILE=/etc/openldap/slapd.ldif
+export LDAP_BASE_FILE=/etc/openldap/base.ldif
+
+
+docker run --name openldap -p 389:389 -p 636:636 ^ 
+ --env LDAP_ORG_DC="scisoftware" ^
+ --env LDAP_OLC_SUFFIX=dc=scisoftware,dc=pl ^
+ --env LDAP_ROOT_CN=manager ^
+ --env LDAP_ROOT_DN=cn=manager,dc=scisoftware,dc=pl ^
+ --env LDAP_ROOT_PASSWD=secret ^
+ --volume slapd_database:/var/lib/openldap ^
+ --volume slapd_config:/etc/openldap/slapd.d ^
+ --detach ibpm/openldap:ubuntu-0.1
+
+
+# Ubuntu! Uruchomienie serwera OpenLDAP
+ /usr/sbin/slapd -u openldap -g openldap -h "ldap:/// ldapi:/// ldaps:///" -F /etc/ldap/slapd.d -d -1
+
+# Zatrzymanie serwera OpenLDAP
+export SLAPD_PID=`cat /var/run/slapd/slapd.pid`
+kill $SLAPD_PID
+
+# Ustwianie stałych
+export LDAP_ORG_DC="scisoftware"
+export LDAP_OLC_SUFFIX=dc=scisoftware,dc=org
+export LDAP_ROOT_CN=manager
+export LDAP_ROOT_DN=cn=manager,dc=scisoftware,dc=org
+export LDAP_ROOT_PASSWD=secret
+export LDAP_TECHNICAL_USER_CN=FrontendAccount
+export LDAP_TECHNICAL_USER_PASSWD=secret
+export LDAP_OLC_ACCESS="by * read"
+export SERVER_DEBUG=32
+
+export SLAPD_URLS="ldap:/// ldapi:/// ldaps:///"
+export SLAPD_OPTIONS="/etc/ldap/slapd.d"
+export LDAP_INIT_FILE=/etc/ldap/slapd.ldif
+export LDAP_BASE_FILE=/etc/ldap/base.ldif
+export WORKSPACE=/opt/modify
+export LDAP_INIT_FLAG_FILE=/var/lib/ldap/ldap.init
+
+
+# Tworzenie na nowo serwera OpenLDAP
+cd ~slawas/workspace
+rm -rf *
+rm -rf /etc/ldap/schema/0*
+# Ładowanie plików z projektu
+scp -r * slawas@openldap-tst01.hgdb.org:workspace
+
+# Po załadowaniu plików z projektu do . 
+rm -fr /var/lib/ldap && rm -fr /etc/ldap/slapd.d && rm -fr /opt/modify && rm -fr /opt/service 
+cp schemas/* /etc/ldap/schema
+cp init/slapd.ldif /etc/ldap/slapd.ldif.docker-init
+mkdir -p /opt/modify && mkdir -p /opt/service
+cp -r modify/* /opt/modify/
+cp -r service/* /opt/service/
+chmod a-x /etc/ldap/schema/* \
+ && chmod a-w /etc/ldap/schema/* \
+ && chmod a+r /etc/ldap/schema/* \
+ && mkdir -p /var/lib/ldap \
+ && mkdir -p /etc/ldap/slapd.d \
+ && chown -R openldap:openldap /var/lib/ldap \
+ && chown root:openldap /etc/ldap/ldap.conf \
+ && chmod 640 /etc/ldap/ldap.conf \
+ && rm -rf /tmp/* \
+ && rm -rf /var/tmp/*
+
+export SERVER_DEBUG=32
+
+ # Kroki opcjonalne ze skryptu startowania serwera OpenLDAP
+LDAP_ROOT_PASSWD_ENCRYPTED=`slappasswd -h {SSHA} -s $LDAP_ROOT_PASSWD`
+echo "Init slapd.ldif..."
+cp -f /etc/ldap/slapd.ldif.docker-init $LDAP_INIT_FILE
+sed -i "s|LDAP_OLC_SUFFIX|${LDAP_OLC_SUFFIX}|g" $LDAP_INIT_FILE
+sed -i "s|LDAP_ROOT_DN|${LDAP_ROOT_DN}|g" $LDAP_INIT_FILE
+sed -i "s|LDAP_ROOT_PASSWD_ENCRYPTED|${LDAP_ROOT_PASSWD_ENCRYPTED}|g" $LDAP_INIT_FILE
+#....... dalej ze skryptu
+
+/opt/service/startServer.sh
+
+
+export SLAPD_OPTIONS="/etc/ldap/slapd.d"
+export SERVER_DEBUG=-1
+export SLAPD_URLS="ldap:/// ldapi:/// ldaps:///"
+ulimit -n 8192
+SLAPD_PID=`cat /var/run/slapd/slapd.pid`
+kill $SLAPD_PID
+/usr/sbin/slapd -u openldap -g openldap -d $SERVER_DEBUG -h "$SLAPD_URLS" -F $SLAPD_OPTIONS >> /var/log/slapd.log 2>&1 &
+
