@@ -29,7 +29,6 @@ cn: cszu
 #
 olcAttributeTypes: ( 1.3.6.1.4.1.2021.3.1.4 NAME 'primaryGroup' SUP distinguishedName )
 olcAttributeTypes: ( 1.3.6.1.4.1.2021.3.1.5 NAME 'primaryGroupName' EQUALITY caseIgnoreMatch SYNTAX '1.3.6.1.4.1.1466.115.121.1.15' SINGLE-VALUE )
-olcAttributeTypes: ( 1.3.6.1.4.1.2021.3.1.3 NAME 'department' EQUALITY caseIgnoreMatch SYNTAX '1.3.6.1.4.1.1466.115.121.1.15' SINGLE-VALUE )
 olcAttributeTypes: ( 1.3.6.1.4.1.2021.3.1.6 NAME 'departmentCode' EQUALITY caseIgnoreMatch SYNTAX '1.3.6.1.4.1.1466.115.121.1.15' SINGLE-VALUE )
 olcAttributeTypes: ( 1.3.6.1.4.1.2021.3.1.7 NAME 'isChief' EQUALITY booleanMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 SINGLE-VALUE )
 olcAttributeTypes: ( 1.3.6.1.4.1.2021.3.1.9 NAME 'isActive' EQUALITY booleanMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 SINGLE-VALUE )
@@ -40,5 +39,5 @@ olcAttributeTypes: ( 1.3.6.1.4.1.2021.3.2.4 NAME 'managerGroup' SUP distinguishe
 olcAttributeTypes: ( 1.3.6.1.4.1.2021.3.2.3 NAME 'managerGroupName' EQUALITY caseIgnoreMatch SYNTAX '1.3.6.1.4.1.1466.115.121.1.15' SINGLE-VALUE )
 olcObjectClasses: ( 1.3.6.1.4.1.2021.3.0.1 NAME 'cszuAttrs' DESC 'Attributes used by CSZU' AUXILIARY MUST ( allowSystem $ entryDistinguishedName ))
 olcObjectClasses: ( 1.3.6.1.4.1.2021.3.0.2 NAME 'cszuPrivs' DESC 'Granted access to systems' AUXILIARY MUST ( allowSystem $ entryDistinguishedName ))
-olcObjectClasses: ( 1.3.6.1.4.1.2021.3.1.1 NAME 'cszuUser' DESC 'Attributes used by CSZU for user entries' SUP cszuAttrs AUXILIARY MUST ( primaryGroup ) MAY ( primaryGroupName $ department $ departmentCode $ isChief $ isActive $ hrNumber $ allowSystem $ entryDistinguishedName) )
+olcObjectClasses: ( 1.3.6.1.4.1.2021.3.1.1 NAME 'cszuUser' DESC 'Attributes used by CSZU for user entries' SUP cszuAttrs AUXILIARY MUST ( primaryGroup ) MAY ( primaryGroupName $ departmentCode $ isChief $ isActive $ hrNumber $ allowSystem $ entryDistinguishedName) )
 olcObjectClasses: ( 1.3.6.1.4.1.2021.3.2.1 NAME 'cszuGroup' DESC 'Attributes used by CSZU for group entries' SUP cszuAttrs AUXILIARY MUST ( cn $ managerGroup ) MAY ( mail $ name $ displayName $ description $ manager $ member $ memberOf))
