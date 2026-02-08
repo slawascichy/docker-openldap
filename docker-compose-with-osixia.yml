@@ -1,0 +1,83 @@
+networks:
+  default-network:
+    driver: bridge
+
+volumes:
+  openldap:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /d/mercury/openldap
+  slapd-d:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /d/mercury/slapd.d
+  phpldapadmin-certs:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /d/mercury/phpldapadmin/certs
+  ldap-client-certs:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /d/mercury/phpldapadmin/ldap-certs
+ 
+services:
+  openldap:
+    image: scisoftware/openldap:ubuntu-24.04
+    container_name: openldap_database
+    networks:
+      - default-network
+    hostname: openldap
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - LDAP_ORG_DC=${LDAP_ORG_DC}
+      - LDAP_OLC_SUFFIX=${LDAP_OLC_SUFFIX}
+      - LDAP_ROOT_CN=${LDAP_ROOT_CN}
+      - LDAP_ROOT_DN=cn=${LDAP_ROOT_CN},${LDAP_OLC_SUFFIX}
+      - LDAP_ROOT_PASSWD=${LDAP_ROOT_PASSWD}
+      - LDAP_TECHNICAL_USER_CN=${LDAP_TECHNICAL_USER_CN:-FrontendAccount}
+      - LDAP_TECHNICAL_USER_PASSWD=${LDAP_TECHNICAL_USER_PASSWD:-secret}
+      - LDAP_OLC_ACCESS=${LDAP_OLC_ACCESS:-by anonymous auth by * read}
+      - SERVER_DEBUG=${SERVER_DEBUG:-0}
+    volumes: 
+      - openldap:/var/lib/ldap:rw
+      - slapd-d:/etc/ldap/slapd.d:rw
+    ports:
+      - "389:389"
+      - "636:636"
+  osixia-phpldapadmin:
+    image: osixia/phpldapadmin:stable
+    build: .
+    hostname: osixia-phpldapadmin
+    networks:
+      - default-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    links:
+      - openldap
+    environment:
+      PHPLDAPADMIN_LDAP_HOSTS: "#PYTHON2BASH:[{'openldap': [{'server': [{'port': 389}]}, {'login': [{'attr': 'uid'}, {'fallback_dn': True}]}]}]"
+      PHPLDAPADMIN_HTTPS: ${PHPLDAPADMIN_HTTPS:-true}
+      PHPLDAPADMIN_HTTPS_CRT_FILENAME: ${PHPLDAPADMIN_HTTPS_CRT_FILENAME}
+      PHPLDAPADMIN_HTTPS_KEY_FILENAME: ${PHPLDAPADMIN_HTTPS_KEY_FILENAME}
+      PHPLDAPADMIN_HTTPS_CA_CRT_FILENAME: ${PHPLDAPADMIN_HTTPS_CA_CRT_FILENAME}
+      PHPLDAPADMIN_TRUST_PROXY_SSL: ${PHPLDAPADMIN_TRUST_PROXY_SSL:-true}
+      PHPLDAPADMIN_LDAP_CLIENT_TLS: ${PHPLDAPADMIN_LDAP_CLIENT_TLS:-false}
+      PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT: ${PHPLDAPADMIN_LDAP_CLIENT_TLS:-demand}
+      PHPLDAPADMIN_LDAP_CLIENT_TLS_CA_CRT_FILENAME: ${PHPLDAPADMIN_LDAP_CLIENT_TLS_CA_CRT_FILENAME:-ca.cert}
+      PHPLDAPADMIN_LDAP_CLIENT_TLS_CRT_FILENAME: ${PHPLDAPADMIN_LDAP_CLIENT_TLS_CRT_FILENAME:-cert.crt}
+      PHPLDAPADMIN_LDAP_CLIENT_TLS_KEY_FILENAME: ${PHPLDAPADMIN_LDAP_CLIENT_TLS:-cert.key}
+    volumes: 
+      - phpldapadmin-certs:/container/service/phpldapadmin/assets/apache2/certs:rw
+      - ldap-client-certs:/container/service/ldap-client/assets/certs:rw
+    ports:
+      - "6443:443"
+      - "6080:80"

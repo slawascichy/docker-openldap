@@ -1,0 +1,70 @@
+networks:
+  default-network:
+    driver: bridge
+
+volumes:
+  openldap:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /d/mercury/openldap
+  slapd-d:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /d/mercury/slapd.d 
+ 
+services:
+  openldap:
+    image: scisoftware/openldap:ubuntu-24.04
+    container_name: openldap_database
+    networks:
+      - default-network
+    hostname: openldap
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - LDAP_ORG_DC=${LDAP_ORG_DC}
+      - LDAP_OLC_SUFFIX=${LDAP_OLC_SUFFIX}
+      - LDAP_ROOT_CN=${LDAP_ROOT_CN}
+      - LDAP_ROOT_DN=cn=${LDAP_ROOT_CN},${LDAP_OLC_SUFFIX}
+      - LDAP_ROOT_PASSWD=${LDAP_ROOT_PASSWD}
+      - LDAP_TECHNICAL_USER_CN=${LDAP_TECHNICAL_USER_CN:-FrontendAccount}
+      - LDAP_TECHNICAL_USER_PASSWD=${LDAP_TECHNICAL_USER_PASSWD:-secret}
+      - LDAP_OLC_ACCESS=${LDAP_OLC_ACCESS:-by anonymous auth by * read}
+      - SERVER_DEBUG=${SERVER_DEBUG:-0}
+    volumes: 
+      - openldap:/var/lib/ldap:rw
+      - slapd-d:/etc/ldap/slapd.d:rw
+    ports:
+      - "389:389"
+      - "636:636"
+  ldap-ui:
+    # https://github.com/dnknth/ldap-ui
+    image: dnknth/ldap-ui:latest
+    container_name: openldap_ui
+    networks:
+      - default-network
+    build: .
+    hostname: ldap-ui
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    links:
+      - openldap
+    environment:
+      - LDAP_URL=${UI_LDAP_URI:-ldap://openldap:389}/
+      - BASE_DN=${UI_SEARCH_BASE}
+      - USE_TLS=${UI_USE_TLS:-}
+      - INSECURE_TLS=${UI_INSECURE_TLS:-}
+#      - BIND_DN=${UI_BIND_DN}
+#      - BIND_PASSWORD=${UI_BIND_PASSWORD}
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    healthcheck:
+      test: "wget -q -O /dev/null http://127.0.0.1:5000"
+      interval: 360s
+      retries: 2
+      timeout: 2s

@@ -44,6 +44,20 @@ docker run --name openldap -p 389:389 -p 636:636 ^
  --volume slapd_config:/etc/openldap/slapd.d ^
  --detach ibpm/openldap:ubuntu-0.1
 
+# Uruchomienie kompozycji podstawowej (tylko kontener openldap)
+docker compose -f docker-compose.yml --env-file ldap-conf.env up -d
+
+# UI użytkownika: Testowanie kompozycji z ldap-ui
+docker compose -f docker-compose-with-ldapui.yml --env-file ldap-with-ldapui-conf.env up
+docker compose -f docker-compose-with-ldapui.yml --env-file ldap-with-ldapui-conf.env up -d
+
+# UI użytkownika: Testowanie kompozycji z phpldapadmin
+docker compose -f docker-compose-with-phpldapadmin.yml --env-file ldap-conf.env up
+docker compose -f docker-compose-with-phpldapadmin.yml --env-file ldap-conf.env up -d
+
+# UI użytkownika: Testowanie kompozycji z osixia
+docker compose -f docker-compose-with-osixia.yml --env-file ldap-with-osixia-conf.env up
+docker compose -f docker-compose-with-osixia.yml --env-file ldap-with-osixia-conf.env up -d
 
 # Ubuntu! Uruchomienie serwera OpenLDAP
  /usr/sbin/slapd -u openldap -g openldap -h "ldap:/// ldapi:/// ldaps:///" -F /etc/ldap/slapd.d -d -1
