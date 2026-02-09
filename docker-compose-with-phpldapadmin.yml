@@ -56,7 +56,6 @@ services:
   phpldapadmin:
     image: phpldapadmin/phpldapadmin:2.3.9
     container_name: openldap_phpldapadmin
-    build: .
     networks:
       - default-network
     hostname: phpldapadmin

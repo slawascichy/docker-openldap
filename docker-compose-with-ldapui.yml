@@ -47,7 +47,6 @@ services:
     container_name: openldap_ui
     networks:
       - default-network
-    build: .
     hostname: ldap-ui
     extra_hosts:
       - "host.docker.internal:host-gateway"

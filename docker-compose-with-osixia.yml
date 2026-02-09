@@ -55,7 +55,6 @@ services:
       - "636:636"
   osixia-phpldapadmin:
     image: osixia/phpldapadmin:stable
-    build: .
     hostname: osixia-phpldapadmin
     networks:
       - default-network

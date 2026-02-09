@@ -11,7 +11,7 @@ ENV LDAP_OLC_ACCESS="by anonymous auth by * read"
 ENV SERVER_DEBUG=32
 
 RUN apt update -q && \
-    apt install locales && \
+    apt install -y locales && \
     locale-gen pl_PL.UTF-8 && \
     dpkg-reconfigure locales
 
