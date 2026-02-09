@@ -48,8 +48,8 @@ services:
       - LDAP_OLC_ACCESS=${LDAP_OLC_ACCESS:-by anonymous auth by * read}
       - SERVER_DEBUG=${SERVER_DEBUG:-0}
     volumes: 
-      - openldap:/var/lib/ldap:rw
-      - slapd-d:/etc/ldap/slapd.d:rw
+      - openldap:/var/lib/ldap:rw,Z
+      - slapd-d:/etc/ldap/slapd.d:rw,Z
     ports:
       - "389:389"
       - "636:636"
@@ -80,7 +80,7 @@ services:
 #      - LDAP_USERNAME=cn=manager,dc=scisoftware,dc=pl
 #      - LDAP_PASSWORD=secret
     volumes: 
-      - phpldapadmin-sessions:/app/storage/framework/sessions:rw
-      - phpldapadmin-logs:/app/storage/logs:rw
+      - phpldapadmin-sessions:/app/storage/framework/sessions:rw,Z
+      - phpldapadmin-logs:/app/storage/logs:rw,Z
     ports:
       - "8080:8080"

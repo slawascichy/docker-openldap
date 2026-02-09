@@ -48,8 +48,8 @@ services:
       - LDAP_OLC_ACCESS=${LDAP_OLC_ACCESS:-by anonymous auth by * read}
       - SERVER_DEBUG=${SERVER_DEBUG:-0}
     volumes: 
-      - openldap:/var/lib/ldap:rw
-      - slapd-d:/etc/ldap/slapd.d:rw
+      - openldap:/var/lib/ldap:rw,Z
+      - slapd-d:/etc/ldap/slapd.d:rw,Z
     ports:
       - "389:389"
       - "636:636"
@@ -76,8 +76,8 @@ services:
       PHPLDAPADMIN_LDAP_CLIENT_TLS_CRT_FILENAME: ${PHPLDAPADMIN_LDAP_CLIENT_TLS_CRT_FILENAME:-cert.crt}
       PHPLDAPADMIN_LDAP_CLIENT_TLS_KEY_FILENAME: ${PHPLDAPADMIN_LDAP_CLIENT_TLS:-cert.key}
     volumes: 
-      - phpldapadmin-certs:/container/service/phpldapadmin/assets/apache2/certs:rw
-      - ldap-client-certs:/container/service/ldap-client/assets/certs:rw
+      - phpldapadmin-certs:/container/service/phpldapadmin/assets/apache2/certs:ro,Z
+      - ldap-client-certs:/container/service/ldap-client/assets/certs:ro,Z
     ports:
       - "6443:443"
       - "6080:80"
