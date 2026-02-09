@@ -55,6 +55,7 @@ services:
       - "636:636"
   osixia-phpldapadmin:
     image: osixia/phpldapadmin:stable
+    container_name: openldap_phpldapadmin
     hostname: osixia-phpldapadmin
     networks:
       - default-network

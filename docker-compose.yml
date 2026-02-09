@@ -19,6 +19,7 @@ volumes:
 services:
   openldap:
     image: scisoftware/openldap:ubuntu-24.04
+    container_name: openldap_database
     networks:
       - default-network
     environment:
