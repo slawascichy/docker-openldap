@@ -71,7 +71,7 @@ objectclass ( 1.2.840.113556.1.4.803
 objectclass ( 1.2.840.113556.1.4.804 
     NAME 'team' 
     DESC 'MS Active Directory group entry with required common name and display name' 
-    SUP top STRUCTURAL 
+    AUXILIARY 
     MUST ( cn $ displayName ) 
     MAY ( mail $ name $ description $ manager $ member $ memberOf $ sAMAccountName ) 
     X-ORIGIN 'AD Group' )
