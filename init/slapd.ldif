@@ -97,7 +97,7 @@ olcDbIndex: allowSystem pres,eq
 olcDbIndex: sAMAccountName pres,eq
 olcDbIndex: userPrincipalName pres,eq
 # Dostęp do atrybutu z hasłem w celu możliwości zalogowania się/zmiany #######
-olcAccess: to userPassword,sambaNTPassword by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn="LDAP_ROOT_DN" manage by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write by dn.children="ou=Technical,LDAP_OLC_SUFFIX" read by self write by anonymous auth  by * none
+olcAccess: to attrs=userPassword,sambaNTPassword by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn="LDAP_ROOT_DN" manage by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write by dn.children="ou=Technical,LDAP_OLC_SUFFIX" read by self write by anonymous auth  by * none
 # Dostęp do atrybutu z historią haseł haseł ##################################
 olcAccess: to attrs=sambaPasswordHistory,sambaPwdLastSet,shadowLastChange by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn="LDAP_ROOT_DN" manage by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write dn.children="ou=Admins,LDAP_OLC_SUFFIX" read by self auth by self write by * none
 # Dostęp do atrybutu z kluczem kerberos'a ####################################
