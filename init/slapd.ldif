@@ -20,8 +20,10 @@ olcPidFile: /var/run/slapd/slapd.pid
 dn: cn=module,cn=config
 objectClass: olcModuleList
 cn: module
-olcModulepath:  /usr/lib/ldap
-olcModuleload:  back_mdb
+olcModulepath: /usr/lib/ldap
+olcModuleload: back_mdb.la
+olcModuleload: lastbind.la
+olcModuleload: ppolicy.la
 
 dn: cn=schema,cn=config
 objectClass: olcSchemaConfig
@@ -38,7 +40,8 @@ include: file:///etc/ldap/schema/003-netscapemessagingserver.ldif
 include: file:///etc/ldap/schema/004-sudo.ldif
 include: file:///etc/ldap/schema/005-cszu.ldif
 include: file:///etc/ldap/schema/006-calendarEntry.ldif
-include: file:///etc/ldap/schema/007-ppolicy.ldif
+# Schemę załadował wcześniej moduł ppolicy
+#include: file:///etc/ldap/schema/007-ppolicy.ldif
 # To zamiast include: file:///etc/ldap/schema/nis.ldif
 include: file:///etc/ldap/schema/013-rfc2307bis.ldif
 include: file:///etc/ldap/schema/014-samba.ldif
@@ -71,8 +74,8 @@ olcAccess: to * by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=
 dn: olcDatabase=monitor,cn=config
 objectClass: olcDatabaseConfig
 olcDatabase: monitor
-olcRootDN: cn=config
-olcMonitoring: FALSE
+olcRootDN: LDAP_ROOT_DN
+olcMonitoring: TRUE
 
 ##############################################################################
 # MDB database definitions
@@ -87,6 +90,7 @@ olcSuffix: LDAP_OLC_SUFFIX
 olcRootDN: LDAP_ROOT_DN
 olcRootPW: LDAP_ROOT_PASSWD_ENCRYPTED
 olcDbDirectory: /var/lib/ldap
+# Indeksy ###################################################################
 olcDbIndex: objectClass pres,eq
 olcDbIndex: uid pres,eq
 olcDbIndex: cn,sn pres,eq,approx,sub
@@ -96,16 +100,22 @@ olcDbIndex: sudoUser,sudoHost pres,eq
 olcDbIndex: allowSystem pres,eq
 olcDbIndex: sAMAccountName pres,eq
 olcDbIndex: userPrincipalName pres,eq
-# Dostęp do atrybutu z hasłem w celu możliwości zalogowania się/zmiany #######
-olcAccess: to attrs=userPassword,sambaNTPassword by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn="LDAP_ROOT_DN" manage by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write by dn.children="ou=Technical,LDAP_OLC_SUFFIX" read by self write by anonymous auth  by * none
+olcDbIndex: authTimestamp eq
+# Dostęp do atrybutu z hasłem w celu możliwości zalogowania się/zmiany ######
+olcAccess: to attrs=userPassword,sambaNTPassword by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn="LDAP_ROOT_DN" manage by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write by dn.children="ou=Technical,LDAP_OLC_SUFFIX" read by self write by anonymous auth by * none
 # Dostęp do atrybutu z historią haseł haseł ##################################
-olcAccess: to attrs=sambaPasswordHistory,sambaPwdLastSet,shadowLastChange by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn="LDAP_ROOT_DN" manage by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write by dn.children="ou=Admins,LDAP_OLC_SUFFIX" read by self auth by self write by * none
+olcAccess: to attrs=sambaPasswordHistory,sambaPwdLastSet,shadowLastChange by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn="LDAP_ROOT_DN" manage by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write by dn.children="ou=Technical,LDAP_OLC_SUFFIX" read by self auth by self write by * none
+# Ukrycie danych wrażliwych przed anonimami ##################################
+olcAccess: to attrs=homeDirectory,loginShell,uidNumber,gidNumber by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn="LDAP_ROOT_DN" manage by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write by dn.children="ou=Technical,LDAP_OLC_SUFFIX" read by self read by * none
+# Ukrycie czasu logowania przed zwykłymi użytkownikami #######################
+olcAccess: to attrs=authTimestamp by dn.children="ou=Admins,LDAP_OLC_SUFFIX" read by self read by dn.children="ou=Technical,LDAP_OLC_SUFFIX" read by * none
 # Dostęp do atrybutu z kluczem kerberos'a ####################################
 olcAccess: to attrs=krbPrincipalKey by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn.exact="uid=kdc-service,LDAP_OLC_SUFFIX" read by dn.exact="uid=kadmin-service,LDAP_OLC_SUFFIX" write by self auth by self write by * none
 # Dostęp do gałęzi kerberos'a via mdb ########################################
 olcAccess: to dn.subtree="cn=Kerberos,LDAP_OLC_SUFFIX" by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn.exact="uid=kdc-service,LDAP_OLC_SUFFIX" read by dn.exact="uid=kadmin-service,LDAP_OLC_SUFFIX" write by * none
-# Dostęp do  drzewa głównego #################################################
-# Do lokalnego drzewa głównego mają dostęp tylko super użytkownicy
-olcAccess: to dn.base="" by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn="LDAP_ROOT_DN" manage by * none
+# Dostęp do drzewa głównego ##################################################
+# Root DSE (ważne dla narzędzi typu Apache Directory Studio)
+olcAccess: to dn.base="" by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn="LDAP_ROOT_DN" manage by * read
+olcAccess: to dn.base="LDAP_OLC_SUFFIX" by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn="LDAP_ROOT_DN" manage by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write by dn.children="ou=Technical,LDAP_OLC_SUFFIX" read by self read by * none
 # Pozostały dostęp ###########################################################
-olcAccess: to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn="LDAP_ROOT_DN" manage by dn.children="ou=Admins,LDAP_OLC_SUFFIX" read by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write by self read by self write by self auth LDAP_OLC_ACCESS
+olcAccess: to * by dn.base="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage by dn="LDAP_ROOT_DN" manage by dn.children="ou=Admins,LDAP_OLC_SUFFIX" write by dn.children="ou=Technical,LDAP_OLC_SUFFIX" read by self write by self auth LDAP_OLC_ACCESS

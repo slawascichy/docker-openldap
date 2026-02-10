@@ -28,10 +28,22 @@ initDatabase() {
     cd $WORKSPACE
       
     echo "Applay init scripts START"
-    echo "Run base.ldif..."
+    
+    echo "Step 000-add-lastbind.ldif..."
+    LDIF_FILE=$WORKSPACE/000-add-lastbind.ldif
+    cp -f $WORKSPACE/000-add-lastbind.ldif.docker-init $LDIF_FILE
+    ldapadd -Y EXTERNAL -H ldapi:/// -f $LDIF_FILE
+    
+    echo "Step 001-add-ppolicy.ldif..."
+    LDIF_FILE=$WORKSPACE/001-add-ppolicy.ldif
+    cp -f $WORKSPACE/001-add-ppolicy.ldif.docker-init $LDIF_FILE
+    sed -i "s|LDAP_OLC_SUFFIX|${LDAP_OLC_SUFFIX}|g" $LDIF_FILE
+    ldapadd -Y EXTERNAL -H ldapi:/// -f $LDIF_FILE
+    
+    echo "Step 002-base.ldif..."
     LDAP_TECHNICAL_USER_ENCRYPTED=`slappasswd -h {SSHA} -s $LDAP_TECHNICAL_USER_PASSWD`
-    LDIF_FILE=$WORKSPACE/base.ldif
-    cp -f $WORKSPACE/base.ldif.docker-init $LDIF_FILE
+    LDIF_FILE=$WORKSPACE/002-base.ldif
+    cp -f $WORKSPACE/002-base.ldif.docker-init $LDIF_FILE
     sed -i "s|LDAP_OLC_SUFFIX|${LDAP_OLC_SUFFIX}|g" $LDIF_FILE
     sed -i "s|LDAP_ORG_DC|${LDAP_ORG_DC}|g" $LDIF_FILE
     sed -i "s|LDAP_ROOT_DN|${LDAP_ROOT_DN}|g" $LDIF_FILE
@@ -39,10 +51,16 @@ initDatabase() {
     sed -i "s|LDAP_TECHNICAL_USER_CN|${LDAP_TECHNICAL_USER_CN}|g" $LDIF_FILE
     sed -i "s|LDAP_TECHNICAL_USER_ENCRYPTED|${LDAP_TECHNICAL_USER_ENCRYPTED}|g" $LDIF_FILE
     ldapadd -Y EXTERNAL -H ldapi:/// -f $LDIF_FILE
+
+    echo "Step 003-add-ppolicy-default.ldif..."
+    LDIF_FILE=$WORKSPACE/003-add-ppolicy-default.ldif
+    cp -f $WORKSPACE/003-add-ppolicy-default.ldif.docker-init $LDIF_FILE
+    sed -i "s|LDAP_OLC_SUFFIX|${LDAP_OLC_SUFFIX}|g" $LDIF_FILE
+    ldapadd -Y EXTERNAL -H ldapi:/// -f $LDIF_FILE
     
-    echo "Run sample-entries.ldif..."
-    LDIF_FILE=$WORKSPACE/sample-entries.ldif
-    cp -f $WORKSPACE/sample-entries.ldif.docker-init $LDIF_FILE
+    echo "Step 004-sample-entries.ldif..."
+    LDIF_FILE=$WORKSPACE/004-sample-entries.ldif
+    cp -f $WORKSPACE/004-sample-entries.ldif.docker-init $LDIF_FILE
     sed -i "s|LDAP_OLC_SUFFIX|${LDAP_OLC_SUFFIX}|g" $LDIF_FILE
     sed -i "s|LDAP_ROOT_PASSWD_ENCRYPTED|${LDAP_ROOT_PASSWD_ENCRYPTED}|g" $LDIF_FILE
     ldapadd -Y EXTERNAL -H ldapi:/// -f $LDIF_FILE

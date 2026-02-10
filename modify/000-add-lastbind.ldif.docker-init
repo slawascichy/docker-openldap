@@ -1,0 +1,10 @@
+##############################################################################
+# Activating LastBind for this specific database
+##############################################################################
+dn: olcOverlay=lastbind,olcDatabase={2}mdb,cn=config
+changetype: add
+objectClass: olcOverlayConfig
+objectClass: olcLastBindConfig
+olcOverlay: lastbind
+#olcLastBind: TRUE
+#olcLastBindPrecision: 3600

@@ -3,13 +3,13 @@ dn: cn=mrc-admin,ou=Groups,LDAP_OLC_SUFFIX
 objectClass: groupOfUniqueNames
 objectClass: top
 cn: mrc-admin
-uniqueMember: uid=mrcmanager,ou=People,dc=scisoftware,dc=pl
+uniqueMember: uid=mrcmanager,ou=People,LDAP_OLC_SUFFIX
 
 dn: cn=mrc-user,ou=Groups,LDAP_OLC_SUFFIX
 objectClass: groupOfUniqueNames
 objectClass: top
 cn: mrc-user
-uniqueMember: uid=mrcuser,ou=People,dc=scisoftware,dc=pl
+uniqueMember: uid=mrcuser,ou=People,LDAP_OLC_SUFFIX
 
 # Sample groups - END
 # Sample users - START

@@ -1,0 +1,11 @@
+##############################################################################
+# Activating ppolicy for this specific database
+##############################################################################
+dn: olcOverlay=ppolicy,olcDatabase={2}mdb,cn=config
+changetype: add
+objectClass: olcOverlayConfig
+objectClass: olcPPolicyConfig
+olcOverlay: ppolicy
+# Specify the default policy (we will create it in the next step)
+olcPPolicyDefault: cn=default,ou=Policies,LDAP_OLC_SUFFIX
+olcPPolicyHashCleartext: TRUE

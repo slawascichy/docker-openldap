@@ -58,7 +58,7 @@ objectclass ( 1.2.840.113556.1.4.220
     DESC 'MS Active Directory Person Entry' 
     SUP inetOrgPerson  STRUCTURAL 
     MUST ( uid $ sAMAccountName ) 
-    MAY ( userPrincipalName $ msExchUserCulture $ MPK1Code $ MPK1Name $ MPK2Code $ MPK2Name $ userPassword ) )
+    MAY ( userPrincipalName $ msExchUserCulture $ MPK1Code $ MPK1Name $ MPK2Code $ MPK2Name $ userPassword $ co ) )
     
 objectclass ( 1.2.840.113556.1.4.803 
     NAME 'groupOfMembers' 

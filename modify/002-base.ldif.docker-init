@@ -83,3 +83,11 @@ objectClass: simpleSecurityObject
 userPassword: LDAP_TECHNICAL_USER_ENCRYPTED
 description: Account used for the Kerberos Admin server
 
+#######################################################################
+# Defining a password management policy
+#######################################################################
+dn: ou=Policies,LDAP_OLC_SUFFIX
+objectClass: organizationalUnit
+objectClass: top
+ou: Policies
+description: User password management policy

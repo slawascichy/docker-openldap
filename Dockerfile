@@ -21,6 +21,7 @@ RUN apt install -y \
 	ldapscripts \
 	ldapvi \
 	slapd \
+	slapd-contrib \
 	vim-nox \
 	nginx \
 	net-tools

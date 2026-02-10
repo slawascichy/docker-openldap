@@ -1,0 +1,27 @@
+#######################################################################
+# Defining a password management policy
+#######################################################################
+dn: cn=default,ou=Policies,LDAP_OLC_SUFFIX
+changetype: add
+objectClass: top
+objectClass: device
+objectClass: pwdPolicy
+cn: default
+pwdAttribute: userPassword
+# Password lifetime in seconds (e.g. 90 days = 7776000)
+pwdMaxAge: 7776000
+# Minimum password length
+pwdMinLength: 12
+# Number of old passwords remembered (blocking replays)
+pwdInHistory: 10
+# Number of failed attempts before account lockout
+pwdMaxFailure: 10
+# Account lockout time in seconds (e.g., 30 minutes = 1800)
+pwdLockout: TRUE
+pwdLockoutDuration: 1800
+# Time after which the error counter resets (e.g., 15 minutes)
+pwdFailureCountInterval: 900
+# Whether the user must change their password after an admin reset
+pwdMustChange: TRUE
+# Password expiration warning (how many seconds before)
+pwdExpireWarning: 604800

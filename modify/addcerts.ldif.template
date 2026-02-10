@@ -1,0 +1,17 @@
+####################################################
+# Szablon dodawania atrybutów z certyfikatami SSL 
+# 1. Skopiuj szablon do pliku o nazwie `addcerts.ldif`.
+# 2. Popraw ścieżki kierujące do odpowiednich plików z certyfikatami i kluczami.
+# 3. `ldapmodify -H ldapi:// -Y EXTERNAL -f addcerts.ldif`.
+# 4. Popraw odpowiednio plik `/etc/ldap/ldap.conf` w kontenerze (zobacz `../config/ldap.conf.template`).
+####################################################
+dn: cn=config
+changetype: modify
+add: olcTLSCACertificateFile
+olcTLSCACertificateFile: /var/lib/ldap/certs/scisoftware_intermediate_ca_chain.crt
+-
+add: olcTLSCertificateFile
+olcTLSCertificateFile: /var/lib/ldap/certs/server-cert-chain.crt
+-
+add: olcTLSCertificateKeyFile
+olcTLSCertificateKeyFile: /var/lib/ldap/certs/server-cert.key
