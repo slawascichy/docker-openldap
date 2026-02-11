@@ -7,13 +7,13 @@
 $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
 switch ($lang){
     case "en":
-        header('Location: /changepassword_en.php');
+        header('Location: /ibpmchpase/changepassword_en.php');
         break;
     case "ko":
-        header('Location: /changepassword_ko.php');
+        header('Location: /ibpmchpase/changepassword_ko.php');
         break;
     default:
-        header('Location: /changepassword_pl.php');
+        header('Location: /ibpmchpase/changepassword_pl.php');
         break;
 }
 

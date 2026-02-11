@@ -1,22 +1,24 @@
-# Używamy oficjalnego obrazu PHP z Apache
 FROM php:8.2-apache
 
-# Instalacja zależności systemowych dla rozszerzenia LDAP
-RUN apt-get update && apt-get install -y \
-    libldap2-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Konfiguracja i instalacja rozszerzenia PHP LDAP
-RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
+# Instalacja zależności LDAP
+RUN apt-get update && apt-get install -y libldap2-dev \
+    && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
     && docker-php-ext-install ldap
 
-# Kopiujemy Twoje pliki strony do kontenera
-# Zakładam, że Twoja strona (index.php) i folder img/ są w tym samym katalogu co Dockerfile
-COPY ./src /var/www/html/
+# Tworzymy katalog kontekstu
+RUN mkdir -p /var/www/html/ibpmchpase
 
-# Ustawiamy uprawnienia dla serwera Apache
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html
+# Kopiujemy pliki źródłowe do środka
+COPY src/ /var/www/html/ibpmchpase/
+
+# Ustawiamy uprawnienia:
+# 1. Właściciel: www-data (użytkownik Apache)
+# 2. Prawa: 755 (Właściciel: wszystko, Reszta: odczyt i wejście do katalogu)
+RUN chown -R www-data:www-data /var/www/html/ibpmchpase \
+    && chmod -R 755 /var/www/html/ibpmchpase
+
+# Czyścimy cache apt, żeby obraz był lżejszy
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Otwieramy port 80
 EXPOSE 80
