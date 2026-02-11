@@ -92,16 +92,27 @@ function changePassword($user, $oldPassword, $newPassword, $newPasswordCnf) {
         }
 
         $message_css = "yes";
-        $message[] = "Success: Password for $user_id has been changed.";
+        $message[] = "Success: Password for user $user_id has been changed.";
         
-        // 7. Success and Notification
-        $mail_address = $user_get[0]["mail"][0];
+        // 7. Email notification if mail attribute is defined
+        $mail_address = isset($user_get[0]["mail"][0]) ? $user_get[0]["mail"][0] : null;
         $first_name = isset($user_get[0]["givenname"][0]) ? $user_get[0]["givenname"][0] : $user_id;
-        $subject = "Password Change Notification - IBPM";
-        $body = "Hello $first_name,\n\n" .
-        "The password for your account ($user_id) has been changed successfully. " .
-        "If you did not perform this action, please contact the administrator immediately.";
-        @mail($mail_address, $subject, $body);
+        
+        if ($mail_address) {
+            $from_env = getenv('MAIL_FROM_ADDRESS') ?: "IBPM Change Password Service <no-reply@ibpm.pro>";
+            $subject = "Password Change Notification - IBPM";
+            $encoded_subject = "=?UTF-8?B?" . base64_encode($subject) . "?=";
+            $body = "Hello $first_name,\n\n" .
+            "The password for your account ($user_id) has been changed successfully. " .
+            "If you did not perform this action, please contact the administrator immediately.";
+            
+            $headers = "MIME-Version: 1.0" . "\r\n";
+            $headers .= "Content-type: text/plain; charset=UTF-8" . "\r\n";
+            $headers .= "From: " . $from_env . "\r\n";
+            @mail($mail_address, $encoded_subject, $body, $headers);
+        } else {
+            $message[] = "Warning: Email notification was not sent (missing email address in profile).";
+        }
         
         return true;
         

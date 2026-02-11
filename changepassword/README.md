@@ -62,7 +62,17 @@ podman build -f Dockerfile -t scisoftware/ibpm-password-change:php-8.2-apache .
 - **Uruchomienie kontenera:**
 ```bash
 # Mapujemy port 8080 na 80 kontenera
-docker run -d --name ibpm-web -p 8080:80 scisoftware/ibpm-password-change:php-8.2-apache
+docker run -d \
+  --name openldap_ibpm_passwordweb \
+  --hostname openldap-ibpm-passwordweb \
+  --network default-network \
+  -p 8080:80 \
+  -e LDAP_SERVER="openldap" \
+  -e LDAP_TECH_USER_DN="cn=GIToperator,ou=Technical,dc=ibpm,dc=pro" \
+  -e LDAP_TECH_USER_PW="secret" \
+  -e MAIL_FROM_ADDRESS="IBPM Change Password <no-reply@ibpm.pro>" \
+  --restart always \
+  scisoftware/ibpm-password-change:php-8.2-apache
 ```
 
 ## 4. Kilka "podpowiedzi" dla Twojej konfiguracji:

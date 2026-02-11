@@ -91,17 +91,25 @@ function changePassword($user, $oldPassword, $newPassword, $newPasswordCnf) {
         $message_css = "yes";
         $message[] = "성공: $user_id 사용자의 비밀번호가 변경되었습니다.";
         
-        // 7. 성공 알림 이메일 전송
-        $mail_address = $user_get[0]["mail"][0];
+        // 7. mail 속성이 정의된 경우 이메일 알림 전송
+        $mail_address = isset($user_get[0]["mail"][0]) ? $user_get[0]["mail"][0] : null;
         $first_name = isset($user_get[0]["givenname"][0]) ? $user_get[0]["givenname"][0] : $user_id;
-        $subject = "비밀번호 변경 알림 - IBPM";
-        $encoded_subject = "=?UTF-8?B?" . base64_encode($subject) . "?=";
-        $body = "안녕하세요 $first_name 님,\n\n" .
-        "귀하의 계정($user_id) 비밀번호가 성공적으로 변경되었습니다. " .
-        "본인이 변경하지 않았다면 즉시 관리자에게 문의하십시오.";
-        $headers = "MIME-Version: 1.0" . "\r\n";
-        $headers .= "Content-type: text/plain; charset=UTF-8" . "\r\n";
-        @mail($mail_address, $encoded_subject, $body, $headers);
+        
+        if ($mail_address) {
+            $from_env = getenv('MAIL_FROM_ADDRESS') ?: "IBPM Change Password Service <no-reply@ibpm.pro>";
+            $subject = "비밀번호 변경 알림 - IBPM";
+            $encoded_subject = "=?UTF-8?B?" . base64_encode($subject) . "?=";
+            $body = "안녕하세요 $first_name 님,\n\n" .
+            "귀하의 계정($user_id) 비밀번호가 성공적으로 변경되었습니다. " .
+            "본인이 변경하지 않았다면 즉시 관리자에게 문의하십시오.";
+            
+            $headers = "MIME-Version: 1.0" . "\r\n";
+            $headers .= "Content-type: text/plain; charset=UTF-8" . "\r\n";
+            $headers .= "From: " . $from_env . "\r\n";
+            @mail($mail_address, $encoded_subject, $body, $headers);
+        } else {
+            $message[] = "경고: 이메일 알림이 전송되지 않았습니다 (프로필에 이메일 주소가 없음).";
+        }
         
         return true;
         

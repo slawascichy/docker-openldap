@@ -91,14 +91,26 @@ function changePassword($user, $oldPassword, $newPassword, $newPasswordCnf) {
         $message_css = "yes";
         $message[] = "Sukces: Hasło dla użytkownika $user_id zostało zmienione.";
         
-        // 7. Powiadomienie e-mail
-        $mail_address = $user_get[0]["mail"][0];
+        // 7. Powiadomienie e-mail jeżeli atrybut mail został zdefiniowany
+        $mail_address = isset($user_get[0]["mail"][0]) ? $user_get[0]["mail"][0] : null;
         $first_name = isset($user_get[0]["givenname"][0]) ? $user_get[0]["givenname"][0] : $user_id;
-        $subject = "Notyfikacja zmiany hasła - IBPM";
-        $body = "Witaj $first_name,\n\n" .
-        "Hasło do Twojego konta ($user_id) zostało pomyślnie zmienione. " .
-        "Jeżeli to nie Ty dokonałeś tej zmiany, skontaktuj się niezwłocznie z administratorem.";
-        @mail($mail_address, $subject, $body);
+        
+        if ($mail_address) {
+            $from_env = getenv('MAIL_FROM_ADDRESS') ?: "IBPM Change Password Service <no-reply@ibpm.pro>";
+            $subject = "Notyfikacja zmiany hasła - IBPM";
+            $encoded_subject = "=?UTF-8?B?" . base64_encode($subject) . "?=";
+            $body = "Witaj $first_name,\n\n" .
+            "Hasło do Twojego konta ($user_id) zostało pomyślnie zmienione. " .
+            "Jeżeli to nie Ty dokonałeś tej zmiany, skontaktuj się niezwłocznie z administratorem.";
+            
+            $headers = "MIME-Version: 1.0" . "\r\n";
+            $headers .= "Content-type: text/plain; charset=UTF-8" . "\r\n";
+            // PHP mail() poprawnie obsłuży format "Nazwa <email@domena.pl>"
+            $headers .= "From: " . $from_env . "\r\n";
+            @mail($mail_address, $encoded_subject, $body, $headers);
+        } else {
+            $message[] = "Ostrzeżenie: Powiadomienie e-mail nie zostało wysłane (brak adresu e-mail w profilu).";
+        }
         
         return true;
         
