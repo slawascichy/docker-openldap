@@ -1,4 +1,4 @@
-# changepassword
+# Strona zmiany hasła użytkownika w LDAP
 
 Aby to działało sprawnie, potrzebujemy obrazu opartego na PHP z zainstalowanym i włączonym rozszerzeniem **LDAP**. Standardowe obrazy PHP nie mają go aktywnego "z pudełka".
 

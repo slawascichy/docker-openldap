@@ -1,4 +1,4 @@
-# Szablony z dodatkową konfiguracją
+# Szablony z dodatkową konfiguracją OpenLDAP
 
 ## Konfiguracja SSL
 
