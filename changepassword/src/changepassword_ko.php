@@ -141,7 +141,7 @@ function changePassword($user, $oldPassword, $newPassword, $newPasswordCnf) {
 <body>
 <div id="container">
     <div class="logo">
-        <a href="http://wwwiq.ibpm.pro"><img src="img/ibpm_white.png" height="25" alt="IBPM S.A."/></a>
+        <a href="http://intranet.ibpm.pro"><img src="img/IBPM-R-logo-white.png" height="25" alt="IBPM S.A."/></a>
         <h2>IBPM S.A. 계정 관리</h2>
     </div>
     <h3>비밀번호 변경</h3>
