@@ -6,3 +6,5 @@
 /ldap-conf-priv.env
 /LDAPandKerberos/
 /tmp/
+/docker-compose-ibpm.yml
+/ldap-ibpm-conf.env

@@ -1,0 +1,12 @@
+# Schema for mapping user name of GitHub Service to LDAP entry 
+# created by: Sławomir Cichy (slawas@slawas.pl)
+#
+dn: cn=github,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: github
+# Atrybut: githubName
+# OID: 1.3.6.1.4.1.89952.1.1 (89952 to przykładowy prywatny numer)
+olcAttributeTypes: ( 1.3.6.1.4.1.89952.1.1 NAME 'githubName' DESC 'User name GitHub Service' EQUALITY caseIgnoreIA5Match SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{256} SINGLE-VALUE )
+# Klasa: githubMember
+# OID: 1.3.6.1.4.1.89952.2.1 (89952 to przykładowy prywatny numer)
+olcObjectClasses: ( 1.3.6.1.4.1.89952.2.1 NAME 'githubMember' DESC 'GitHub Service Member Entry' SUP top AUXILIARY MUST ( githubName ) )
