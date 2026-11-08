@@ -11,6 +11,9 @@ export LDAP_BASE_FILE=/etc/ldap/base.ldif
 export WORKSPACE=/opt/modify
 export LDAP_INIT_FLAG_FILE=/var/lib/ldap/ldap.init
 ulimit -n 8192
+mkdir -p /var/run/slapd
+chown -R openldap:openldap /var/run/slapd
+chmod 755 /var/run/slapd
 
 initDatabase() {
     LDAP_ROOT_PASSWD_ENCRYPTED=`slappasswd -h {SSHA} -s $LDAP_ROOT_PASSWD`
@@ -107,3 +110,4 @@ touch $LOG_FILE
 echo "Starting LDAP deamon..."
 /usr/sbin/slapd -u openldap -g openldap -d $SERVER_DEBUG -h "$SLAPD_URLS" -F $SLAPD_OPTIONS >> $LOG_FILE 2>&1 &
 tail -f $LOG_FILE
+#exec /usr/sbin/slapd -u openldap -g openldap -d $SERVER_DEBUG -h "$SLAPD_URLS" -F $SLAPD_OPTIONS
